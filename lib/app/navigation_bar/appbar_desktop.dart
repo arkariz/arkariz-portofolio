@@ -73,7 +73,8 @@ class _AppBarItemState extends State<AppBarItem> {
         setState(() => isHover = value);
       },
       onTap: widget.onTapButton,
-      child: Container(
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
         padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 5),
         decoration: BoxDecoration(
           gradient: isHover ? pinkpurple : null,
