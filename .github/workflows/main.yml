@@ -20,14 +20,6 @@ jobs:
 
       - name: Install jq
         uses: dcarbone/install-jq-action@v2.0.2
-      
-      - name: flutter Action
-        uses: subosito/flutter-action@v2.5.0
-        with:
-          architecture: arm64
-          flutter-version: '3.7.5'
-          channel: 'stable'
-          cache: true
 
       - name: Flutter check version
         run: flutter --version
