@@ -22,7 +22,7 @@ class MyApp extends StatelessWidget {
           debugShowCheckedModeBanner: false,
           title: 'Flutter Demo',
           theme: AppTheme.themeData(true, context),
-          home: const MainContainerScreen(),
+          home: MainContainerScreen(),
           initialBinding: MainContainerBinding(),
         );
       },
