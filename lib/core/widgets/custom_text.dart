@@ -12,10 +12,12 @@ class CustomText extends StatelessWidget {
     super.key,
     required this.text,
     this.fontSize = h6,
+    this.fontWeight = FontWeight.normal,
   });
 
   final String text;
   final double fontSize;
+  final FontWeight fontWeight;
 
   @override
   Widget build(BuildContext context) {
@@ -23,6 +25,7 @@ class CustomText extends StatelessWidget {
       text,
       style: TextStyle(
         fontSize: fontSize,
+        fontWeight: fontWeight
       ),
     );
   }
