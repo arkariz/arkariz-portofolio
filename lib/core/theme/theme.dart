@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:personal_portofolio/core/colors/colors.dart';
 
 class AppTheme {
   static ThemeData themeData(bool isDarkTheme, BuildContext context) {
@@ -20,8 +21,6 @@ class ThemeColors {
       onSecondary: Colors.white,
       error: Colors.red,
       onError: Colors.white,
-      background: Colors.black,
-      onBackground: Colors.white,
       surface: Colors.black,
       onSurface: Colors.white,
     ),
@@ -39,9 +38,7 @@ class ThemeColors {
       onSecondary: Colors.white,
       error: Colors.red,
       onError: Colors.white,
-      background: Colors.black,
-      onBackground: Colors.white,
-      surface: Colors.black,
+      surface: Colors.black45,
       onSurface: Colors.white,
     ),
   );
@@ -56,4 +53,6 @@ extension ThemeExtras on ThemeData {
   Color get textColor => brightness == Brightness.light
       ? const Color(0xFF403930)
       : const Color(0xFFFFF8F2);
+
+  Gradient get serviceCard => brightness == Brightness.light ? grayWhite : grayBack;
 }
