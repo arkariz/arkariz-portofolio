@@ -13,11 +13,13 @@ class CustomText extends StatelessWidget {
     required this.text,
     this.fontSize = h6,
     this.fontWeight = FontWeight.normal,
+    this.textAlign,
   });
 
   final String text;
   final double fontSize;
   final FontWeight fontWeight;
+  final TextAlign? textAlign;
 
   @override
   Widget build(BuildContext context) {
@@ -27,6 +29,7 @@ class CustomText extends StatelessWidget {
         fontSize: fontSize,
         fontWeight: fontWeight
       ),
+      textAlign: textAlign,
     );
   }
 }
