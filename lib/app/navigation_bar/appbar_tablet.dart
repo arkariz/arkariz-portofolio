@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:get/state_manager.dart';
+import 'package:get/get.dart';
 import 'package:personal_portofolio/app/sections/main_container/main_container_controller.dart';
 import 'package:personal_portofolio/core/colors/colors.dart';
 import 'package:personal_portofolio/core/widgets/custom_text.dart';
 
-class AppbarDesktop extends GetView<MainContainerController> {
-  const AppbarDesktop({super.key});
+class AppbarTablet extends GetView<MainContainerController> {
+  const AppbarTablet({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -24,26 +24,32 @@ class AppbarDesktop extends GetView<MainContainerController> {
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.6),
-            spreadRadius: 25,
-            blurRadius: 20,
+            spreadRadius: 20,
+            blurRadius: 15,
             offset: const Offset(0, 3),
           ),
         ]
       ),
       child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          const Expanded(child: CustomText(text: "< Arkariz />", fontSize: h1)),
-          AppBarItem(
-            label: "Home",
-            onTapButton: () => controller.jumpTo(0),
-          ),
-          AppBarItem(
-            label: "Work",
-            onTapButton: () => controller.jumpTo(2),
-          ),
-          AppBarItem(
-            label: "Contact",
-            onTapButton: (){},
+          const CustomText(text: "< Arkariz />", fontSize: h2),
+          Row(
+            spacing: 50.w,
+            children: [
+              TabletAppBarItem(
+                label: "Home",
+                onTapButton: () => controller.jumpTo(0),
+              ),
+              TabletAppBarItem(
+                label: "Work",
+                onTapButton: () => controller.jumpTo(2),
+              ),
+              TabletAppBarItem(
+                label: "Contact",
+                onTapButton: (){},
+              ),
+            ],
           ),
         ],
       ),
@@ -51,8 +57,8 @@ class AppbarDesktop extends GetView<MainContainerController> {
   }
 }
 
-class AppBarItem extends StatefulWidget {
-  const AppBarItem({
+class TabletAppBarItem extends StatefulWidget {
+  const TabletAppBarItem({
     super.key,
     required this.label,
     required this.onTapButton,
@@ -62,10 +68,10 @@ class AppBarItem extends StatefulWidget {
   final VoidCallback onTapButton;
 
   @override
-  State<AppBarItem> createState() => _AppBarItemState();
+  State<TabletAppBarItem> createState() => _TabletAppBarItemState();
 }
 
-class _AppBarItemState extends State<AppBarItem> {
+class _TabletAppBarItemState extends State<TabletAppBarItem> {
   bool isHover = false;
   
   @override
@@ -77,7 +83,7 @@ class _AppBarItemState extends State<AppBarItem> {
       onTap: widget.onTapButton,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
-        padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 5),
+        padding: EdgeInsets.symmetric(horizontal: 15.w, vertical: 5.h),
         decoration: BoxDecoration(
           gradient: isHover ? pinkpurple : null,
           borderRadius: BorderRadius.circular(6),
@@ -93,7 +99,7 @@ class _AppBarItemState extends State<AppBarItem> {
         ),
         child: CustomText(
           text: widget.label,
-          fontSize: h3,
+          fontSize: h4,
         ),
       ),
     );
