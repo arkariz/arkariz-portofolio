@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:personal_portofolio/app/sections/home/home_screen_mobile.dart';
+import 'package:personal_portofolio/app/sections/home/home_screen_tablet.dart';
 import 'package:personal_portofolio/app/sections/home/home_screen_web.dart';
 import 'package:personal_portofolio/core/widgets/responsive.dart';
 
@@ -8,8 +10,8 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const Responsive(
-      mobile: SizedBox(),
-      tablet: SizedBox(),
+      mobile: HomeScreenMobile(),
+      tablet: HomeScreenTablet(),
       desktop: HomeScreenWeb(),
     );
   }
