@@ -45,14 +45,17 @@ class HomeScreenWeb extends GetView<HomeScreenController> {
       child: Obx(() => InkWell(
         hoverColor: Colors.transparent,
         onHover: (bool value) {
-          controller.isHoverProfilePicture.toggle();
+          controller.isHoverProfilePicture.value = value;
         },
         onTap: (){},
         child: AnimatedContainer(
-          duration: const Duration(milliseconds: 100),
+          duration: const Duration(milliseconds: 1500),
+          curve: Curves.easeInOut,
           transform: controller.isHoverProfilePicture.isTrue
-            ? Matrix4.identity().scaled(1.1, 1.1, 1.1)
-            : Matrix4.identity(),
+            ? (Matrix4.identity()
+              ..translate(0.0, controller.profilePictureOffset.value, 0.0)
+              ..scale(1.1, 1.1, 1.1))
+            : Matrix4.identity()..translate(0.0, controller.profilePictureOffset.value, 0.0),
           child: CircleAvatar(
             radius: 150,
             backgroundColor: Colors.red,
@@ -68,8 +71,9 @@ class HomeScreenWeb extends GetView<HomeScreenController> {
 
   Widget animatedText() {
     return DefaultTextStyle(
-      style: TextStyle(fontSize: h2.sp, color: Colors.white),
+      style: TextStyle(fontSize: 60.sp, color: Colors.white),
       child: AnimatedTextKit(
+        repeatForever: true,
         animatedTexts: [
           TypewriterAnimatedText('A Flutter Developer'),
           TypewriterAnimatedText('A Web Developer'),
