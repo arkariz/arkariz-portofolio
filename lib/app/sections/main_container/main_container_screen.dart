@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get_state_manager/get_state_manager.dart';
 import 'package:personal_portofolio/app/navigation_bar/appbar_desktop.dart';
+import 'package:personal_portofolio/app/navigation_bar/appbar_mobile.dart';
+import 'package:personal_portofolio/app/navigation_bar/appbar_tablet.dart';
 import 'package:personal_portofolio/app/sections/home/home_screen.dart';
+import 'package:personal_portofolio/app/sections/work/work_screen.dart';
 import 'package:personal_portofolio/app/sections/main_container/main_container_controller.dart';
 import 'package:personal_portofolio/core/widgets/responsive.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
@@ -12,19 +15,26 @@ class MainContainerScreen extends GetView<MainContainerController> {
 
   final screens = [
     const HomeScreen(),
+    SizedBox(height: 0.2.sh),
+    const WorkScreen(),
   ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       extendBodyBehindAppBar: true,
-      appBar: const PreferredSize(
-        preferredSize: Size.fromHeight(200),
-        child: Responsive(
-          mobile: SizedBox(),
-          tablet: SizedBox(),
+      appBar: PreferredSize(
+        preferredSize: Size.fromHeight(Responsive.isDesktop(context) ? 200 : 100),
+        child: const Responsive(
+          mobile: AppbarMobile(),
+          tablet: AppbarTablet(),
           desktop: AppbarDesktop()
         ),
+      ),
+      endDrawer: const Responsive(
+        mobile: MobileDrawer(),
+        tablet: SizedBox(),
+        desktop: SizedBox(),
       ),
       body: Stack(
         children: [
@@ -36,26 +46,35 @@ class MainContainerScreen extends GetView<MainContainerController> {
   }
 
   Widget renderScreens() {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 0.15.sw, vertical: 0.15.sh),
-      child: ScrollablePositionedList.builder(
-        padding: EdgeInsets.zero,
-        itemCount: screens.length,
-        itemBuilder: (context, index) => screens[index],
-        itemScrollController: controller.scrollController,
+    return ScrollablePositionedList.builder(
+      padding: EdgeInsets.zero,
+      itemCount: screens.length,
+      itemBuilder: (context, index) => Padding(
+        padding: EdgeInsets.symmetric(horizontal: 0.15.sw, vertical: 0.15.sh),
+        child: screens[index],
       ),
+      itemScrollController: controller.scrollController,
     );
   }
 
   Widget renderBackground() {
-    return Align(
-      alignment: Alignment.center,
-      child: Image.asset(
-        'assets/images/background.jpg',
-        width: ScreenUtil().screenWidth,
-        opacity: const AlwaysStoppedAnimation(0.2),
-        fit: BoxFit.cover,
-        alignment: Alignment.topCenter,
+    return SizedBox.expand(
+      child: ShaderMask(
+        shaderCallback: (rect) {
+          return LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [Colors.black, Colors.black.withValues(alpha: 0.1)],
+            stops: const [0.7, 1.0],
+          ).createShader(rect);
+        },
+        blendMode: BlendMode.dstIn,
+        child: Image.asset(
+          'assets/images/background.jpg',
+          opacity: const AlwaysStoppedAnimation(0.2),
+          fit: BoxFit.cover,
+          repeat: ImageRepeat.repeatY,
+        ),
       ),
     );
   }
