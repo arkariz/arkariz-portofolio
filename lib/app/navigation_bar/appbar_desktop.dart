@@ -43,7 +43,7 @@ class AppbarDesktop extends GetView<MainContainerController> {
           ),
           AppBarItem(
             label: "Contact",
-            onTapButton: (){},
+            onTapButton: () => controller.jumpTo(4),
           ),
         ],
       ),

@@ -47,7 +47,7 @@ class AppbarTablet extends GetView<MainContainerController> {
               ),
               TabletAppBarItem(
                 label: "Contact",
-                onTapButton: (){},
+                onTapButton: () => controller.jumpTo(4),
               ),
             ],
           ),

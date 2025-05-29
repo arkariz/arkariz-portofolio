@@ -4,6 +4,7 @@ import 'package:get/get_state_manager/get_state_manager.dart';
 import 'package:personal_portofolio/app/navigation_bar/appbar_desktop.dart';
 import 'package:personal_portofolio/app/navigation_bar/appbar_mobile.dart';
 import 'package:personal_portofolio/app/navigation_bar/appbar_tablet.dart';
+import 'package:personal_portofolio/app/sections/contact/contact_screen.dart';
 import 'package:personal_portofolio/app/sections/home/home_screen.dart';
 import 'package:personal_portofolio/app/sections/work/work_screen.dart';
 import 'package:personal_portofolio/app/sections/main_container/main_container_controller.dart';
@@ -17,6 +18,8 @@ class MainContainerScreen extends GetView<MainContainerController> {
     const HomeScreen(),
     SizedBox(height: 0.2.sh),
     const WorkScreen(),
+    SizedBox(height: 0.2.sh),
+    const ContactScreen(),
   ];
 
   @override

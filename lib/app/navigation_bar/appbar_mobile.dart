@@ -75,6 +75,7 @@ class MobileDrawer extends GetView<MainContainerController> {
               label: "Contact",
               onTap: () {
                 Navigator.pop(context);
+                controller.jumpTo(4);
               },
             ),
           ],
