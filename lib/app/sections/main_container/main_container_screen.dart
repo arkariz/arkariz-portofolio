@@ -39,18 +39,25 @@ class MainContainerScreen extends GetView<MainContainerController> {
       body: Stack(
         children: [
           renderBackground(),
-          renderScreens(),
+          Responsive(
+            mobile: renderScreens(horizontalPadding: 0.05.sw, verticalPadding: 0.15.sh),
+            tablet: renderScreens(horizontalPadding: 0.05.sw, verticalPadding: 0.15.sh),
+            desktop: renderScreens(horizontalPadding: 0.15.sw, verticalPadding: 0.15.sh),
+          ),
         ],
       ),
     );
   }
 
-  Widget renderScreens() {
+  Widget renderScreens({
+    required double horizontalPadding,
+    required double verticalPadding,
+  }) {
     return ScrollablePositionedList.builder(
       padding: EdgeInsets.zero,
       itemCount: screens.length,
       itemBuilder: (context, index) => Padding(
-        padding: EdgeInsets.symmetric(horizontal: 0.15.sw, vertical: 0.15.sh),
+        padding: EdgeInsets.symmetric(horizontal: horizontalPadding, vertical: verticalPadding),
         child: screens[index],
       ),
       itemScrollController: controller.scrollController,

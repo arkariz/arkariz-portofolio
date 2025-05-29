@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:personal_portofolio/app/sections/work/work_screen_mobile.dart';
+import 'package:personal_portofolio/app/sections/work/work_screen_tablet.dart';
 import 'package:personal_portofolio/app/sections/work/work_screen_web.dart';
 import 'package:personal_portofolio/core/widgets/responsive.dart';
 
@@ -7,9 +9,9 @@ class WorkScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Responsive(
-      mobile: SizedBox(),
-      tablet: SizedBox(),
+    return Responsive(
+      mobile: WorkScreenMobile(),
+      tablet: WorkScreenTablet(),
       desktop: WorkScreenWeb(),
     );
   }

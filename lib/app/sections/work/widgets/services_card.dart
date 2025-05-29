@@ -12,7 +12,6 @@ class ServicesCard extends StatefulWidget {
     required this.description,
     required this.tool,
     required this.maxWidth,
-    required this.maxHeight,
   });
 
   final String? icon;
@@ -20,13 +19,15 @@ class ServicesCard extends StatefulWidget {
   final String description;
   final List<String> tool;
   final double maxWidth;
-  final double maxHeight;
 
   @override
   State<ServicesCard> createState() => _ServicesCardState();
 }
 
 class _ServicesCardState extends State<ServicesCard> {
+  final double outerCardVerticalPadding = 55.h;
+  final double innerCardVerticalPadding = 20.h;
+  final double innerCardHorizontalPadding = 20.0;
   bool isHover = false;
   late ThemeData theme;
 
@@ -44,7 +45,7 @@ class _ServicesCardState extends State<ServicesCard> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.symmetric(vertical: 55.h),
+      padding: EdgeInsets.symmetric(vertical: outerCardVerticalPadding),
       child: InkWell(
         hoverColor: Colors.transparent,
         splashColor: Colors.transparent,
@@ -57,6 +58,7 @@ class _ServicesCardState extends State<ServicesCard> {
         },
         child: renderAnimatedContainer(
           content: Column(
+            mainAxisSize: MainAxisSize.min,
             spacing: 20.h,
             children: [
               renderIcon(),
@@ -78,13 +80,12 @@ class _ServicesCardState extends State<ServicesCard> {
         transform: isHover
           ? (Matrix4.identity()
             ..translate(0.0, 10.0, 0.0)
-            ..scale(1.1, 1.1, 1.1))
+            ..scale(1.0, 1.0, 1.0))
           : Matrix4.identity()..translate(0.0, 0.0, 0.0),
       constraints: BoxConstraints(
         maxWidth: widget.maxWidth,
-        maxHeight: widget.maxHeight,
       ),
-      padding: const EdgeInsets.symmetric(vertical: 20.0, horizontal: 20.0),
+      padding: EdgeInsets.symmetric(vertical: innerCardVerticalPadding, horizontal: innerCardHorizontalPadding),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(15),
         gradient: isHover

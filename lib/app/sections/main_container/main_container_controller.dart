@@ -7,7 +7,7 @@ class MainContainerController extends GetxController {
 
   void jumpTo(int index) => scrollController.scrollTo(
     index: index,
-    duration: const Duration(seconds: 2),
+    duration: const Duration(seconds: 1),
     curve: Curves.easeInOutCubic,
     alignment: 0
   );
