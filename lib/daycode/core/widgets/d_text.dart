@@ -13,6 +13,7 @@ enum DTextType {
   titleSmall,
   bodyLarge,
   bodyMedium,
+  bodySmall,
   labelLarge,
   labelMedium,
 }
@@ -62,6 +63,8 @@ class DText extends StatelessWidget {
         return DaycodeTheme.instance.theme.textTheme.bodyLarge!;
       case DTextType.bodyMedium:
         return DaycodeTheme.instance.theme.textTheme.bodyMedium!;
+      case DTextType.bodySmall:
+        return DaycodeTheme.instance.theme.textTheme.bodySmall!;
       case DTextType.labelLarge:
         return DaycodeTheme.instance.theme.textTheme.labelLarge!;
       case DTextType.labelMedium:

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:personal_portofolio/daycode/core/theme/daycode/daycode_theme.dart';
+import 'package:personal_portofolio/daycode/core/widgets/responsive.dart';
 
 class NavigationBarItem extends StatefulWidget {
   const NavigationBarItem({
@@ -23,7 +24,7 @@ class _NavigationBarItemState extends State<NavigationBarItem> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 50),
+      padding: EdgeInsets.symmetric(horizontal: Responsive.isDesktop(context) ? 50 : 30),
       child: InkWell(
         hoverColor: Colors.transparent,
         splashColor: Colors.transparent,

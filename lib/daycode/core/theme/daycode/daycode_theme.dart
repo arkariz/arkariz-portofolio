@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:personal_portofolio/daycode/core/theme/daycode/daycode_color_scheme.dart';
 import 'package:personal_portofolio/daycode/core/theme/daycode/daycode_text_theme.dart';
 
-final daycodeLightTheme = ThemeData(
-  useMaterial3: true,
+ThemeData daycodeLightTheme(ThemeData theme, BuildContext context) => theme.copyWith(
   colorScheme: daycodeLightColorScheme,
   scaffoldBackgroundColor: daycodeLightColorScheme.surface,
   appBarTheme: AppBarTheme(
@@ -31,11 +30,10 @@ final daycodeLightTheme = ThemeData(
       padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
     ),
   ),
-  textTheme: daycodeTextTheme(daycodeLightColorScheme),
+  textTheme: daycodeTextTheme(daycodeLightColorScheme, context),
 );
 
-final daycodeDarkTheme = ThemeData(
-  useMaterial3: true,
+ThemeData daycodeDarkTheme(ThemeData theme, BuildContext context) => theme.copyWith(
   colorScheme: daycodeDarkColorScheme,
   scaffoldBackgroundColor: daycodeDarkColorScheme.surface,
   appBarTheme: AppBarTheme(
@@ -63,7 +61,7 @@ final daycodeDarkTheme = ThemeData(
       padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
     ),
   ),
-  textTheme: daycodeTextTheme(daycodeDarkColorScheme),
+  textTheme: daycodeTextTheme(daycodeDarkColorScheme, context),
 );
 
 class DaycodeTheme {
@@ -77,7 +75,7 @@ class DaycodeTheme {
     theme = Theme.of(context);
   }
 
-  static ThemeData get light => daycodeLightTheme;
-  static ThemeData get dark => daycodeDarkTheme;
+  static ThemeData light(ThemeData theme, BuildContext context) => daycodeLightTheme(theme, context);
+  static ThemeData dark(ThemeData theme, BuildContext context) => daycodeDarkTheme(theme, context);
 }
 

@@ -9,6 +9,7 @@ class DNavigationBar extends GetView<MainContainerController> {
   @override
   Widget build(BuildContext context) {
     return AppBar(
+      elevation: 0,
       title: Obx(() =>Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [

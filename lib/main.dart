@@ -4,9 +4,6 @@ import 'package:get/route_manager.dart';
 import 'package:personal_portofolio/daycode/app/main_container/bindings.dart';
 import 'package:personal_portofolio/daycode/app/main_container/main_container_screen.dart';
 import 'package:personal_portofolio/daycode/core/theme/daycode/daycode_theme.dart';
-
-// TODO HANDLE RESPONSIVENESS
-
 void main() {
   runApp(const MyApp());
 }
@@ -17,16 +14,18 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ScreenUtilInit(
+      designSize: const Size(1280, 720),
       minTextAdapt: true,
-      designSize: const Size(1920, 1080),
-      builder: (_, child){
+      splitScreenMode: true,
+      builder: (ctx, child){
+        final theme = ThemeData(useMaterial3: true);
         return GetMaterialApp(
           debugShowCheckedModeBanner: false,
           title: 'Daily Dose of Code - Rizky',
-          theme: DaycodeTheme.light,
-          darkTheme: DaycodeTheme.dark,
+          theme: DaycodeTheme.light(theme, ctx),
+          darkTheme: DaycodeTheme.dark(theme, ctx),
           themeMode: ThemeMode.light,
-          home: MainContainerScreen(),
+          home: child,
           initialBinding: MainContainerBinding(),
           builder: (context, child) {
             DaycodeTheme.instance.init(context);
@@ -34,6 +33,7 @@ class MyApp extends StatelessWidget {
           },
         );
       },
+      child: MainContainerScreen(),
     );
   }
 }

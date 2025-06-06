@@ -1,7 +1,9 @@
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
+import 'package:personal_portofolio/core/widgets/responsive.dart';
 import 'package:personal_portofolio/daycode/app/landing/landing_controller.dart';
 import 'package:personal_portofolio/daycode/core/theme/daycode/daycode_theme.dart';
 import 'package:personal_portofolio/daycode/core/widgets/d_text.dart';
@@ -15,7 +17,7 @@ class LandingScreen extends GetView<LandingController> {
       decoration: BoxDecoration(
         color: DaycodeTheme.instance.theme.colorScheme.onSurfaceVariant,
       ),
-      padding: const EdgeInsets.all(120),
+      padding: EdgeInsets.all(120.w),
       child: Column(
         spacing: 20,
         children: [
@@ -50,36 +52,11 @@ class LandingScreen extends GetView<LandingController> {
   Row renderContact() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
-      spacing: 20,
+      spacing: 20.w,
       children: [
-        IconButton(
-          enableFeedback: true,
-          onPressed: () => controller.openUrl("https://github.com/arkariz"),
-          icon: SvgPicture.asset(
-            'assets/icons/github.svg',
-            colorFilter: ColorFilter.mode(DaycodeTheme.instance.theme.colorScheme.primary, BlendMode.srcIn),
-            width: 30,
-            height: 30,
-          ),
-        ),
-        IconButton(
-          enableFeedback: true,
-          onPressed: () => controller.openUrl("https://wa.me/62895364632092"),
-          icon: SvgPicture.asset(
-          'assets/icons/whatsapp.svg',
-          colorFilter: ColorFilter.mode(DaycodeTheme.instance.theme.colorScheme.primary, BlendMode.srcIn),
-          width: 30,
-          height: 30,
-        )),
-        IconButton(
-          enableFeedback: true,
-          onPressed: () => controller.openUrl("https://www.linkedin.com/in/muhammad-rizky-0b8050212/"),
-          icon: SvgPicture.asset(
-          'assets/icons/linkedin.svg',
-          colorFilter: ColorFilter.mode(DaycodeTheme.instance.theme.colorScheme.primary, BlendMode.srcIn),
-          width: 30,
-          height: 30,
-        )),
+        iconItem(url: "https://github.com/arkariz", iconPath: 'assets/icons/github.svg'),
+        iconItem(url: "https://wa.me/62895364632092", iconPath: 'assets/icons/whatsapp.svg'),
+        iconItem(url: "https://www.linkedin.com/in/muhammad-rizky-0b8050212/", iconPath: 'assets/icons/linkedin.svg'),
       ],
     );
   }
@@ -113,5 +90,17 @@ class LandingScreen extends GetView<LandingController> {
         ..translate(0.0, controller.profilePictureOffset.value, 0.0)
         ..scale(1.1, 1.1, 1.1))
       : Matrix4.identity()..translate(0.0, controller.profilePictureOffset.value, 0.0);
+  }
+
+  Widget iconItem({required String url, required String iconPath}) {
+    return IconButton(
+      enableFeedback: true,
+      onPressed: () => controller.openUrl(url),
+      icon: SvgPicture.asset(
+        iconPath,
+        colorFilter: ColorFilter.mode(DaycodeTheme.instance.theme.colorScheme.primary, BlendMode.srcIn),
+        width: Responsive.isDesktop(Get.context!) ? 30.w : 60.w,
+      ),
+    );
   }
 }
