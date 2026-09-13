@@ -418,8 +418,10 @@ Status keputusan yang diminta pemilik selama diskusi Phase 0, diperbarui tiap ka
 | 1 | Positioning statement | ✅ **Dikonfirmasi** (13 Sep 2026) | §6 — dipakai apa adanya |
 | 2 | Stack teknis situs | ✅ **Dikonfirmasi** (13 Sep 2026) | §7 — Astro + Tailwind + MDX, bukan Flutter web. Tambahan: wajib mendukung blog/artikel dari awal via Astro Content Collections (bukan halaman statis manual) |
 | 3 | Cara pembersihan Firebase example di `flutter-package-core` | ⏳ **Terbuka — didiskusikan berikutnya** | Opsi: (a) hapus `apps/example/lib/examples/firestore_example.dart`, atau (b) ganti hardcoded key/projectId jadi placeholder + instruksi "isi dengan project Firebase kamu sendiri". Lihat §10 |
-| 4 | Nama repo untuk 2 proyek baru wajib | ⏳ **Terbuka — didiskusikan berikutnya** | Perlu nama sebelum repo GitHub dibuat untuk Proyek Baru #1/item E (reference repo migrasi+gateway) dan Proyek Baru #2/item F (package app-integrity). Lihat §19, §22 |
+| 4 | Nama repo baru | ⏳ **Terbuka — didiskusikan berikutnya** | [DIREVISI §23] Sekarang hanya perlu 1 nama repo baru: item E (reference repo migrasi+gateway, §19/§22/§23.7). Item F sudah dikonsolidasi masuk `advance-mobile-platform` (§23.5), tidak perlu repo/nama terpisah lagi |
 | 5 | Batas "pakai repo di-exclude sebagai referensi" | ✅ **Dikonfirmasi** (13 Sep 2026) | §21.4 — `advance-mobile-platform`, `flutter-architecture-studi`, `flutter-architecture-studi-bank` boleh dipakai sebagai referensi pola PRIVAT untuk rebuild clean-room, TIDAK PERNAH dipublikasikan/ditautkan. Isu keberadaan `flutter-architecture-studi` (commit 10 rekan kerja) di GitHub personal tetap terbuka, terpisah dari keputusan ini |
+| 6 | `advance-mobile-platform` sebagai repo utama (menggantikan `flutter-package-core`) | ✅ **Dikonfirmasi** (13 Sep 2026) | §23 — audit ulang mendalam mengonfirmasi risiko sempit (cuma 2 file: `.gitlab-ci.yml` + link Notion di README), jadi strategi jadi sanitasi in-place, bukan rebuild dari nol. `flutter-package-core` diturunkan perannya (§23.6): bagian bergunanya diadopsi, tidak lagi jadi showcase aktif |
+| 7 | Histori git `advance-mobile-platform`: pertahankan vs fresh history | ⏳ **Terbuka — didiskusikan berikutnya** | §23.3 — rekomendasi: pertahankan histori (residual risk rendah, cuma nama tag CI runner lama, bukan secret) karena 50 commit asli adalah bukti proses kerja nyata. Alternatif: fresh history/squash kalau kamu mau nol jejak sama sekali |
 
 ---
 
@@ -429,9 +431,11 @@ Status keputusan yang diminta pemilik selama diskusi Phase 0, diperbarui tiap ka
 
 Prinsip clean-room yang dipakai di seluruh §21: yang diambil hanya **konsep arsitektur generik** (nama pola, tanggung jawab tiap layer, keputusan trade-off) — bukan nama kelas, nama file, struktur folder persis, apalagi baris kode dari repo manapun yang disebut di §10 sebagai tidak aman. Kalau ragu apakah sesuatu "terlalu mirip", defaultnya adalah menulis ulang dengan pendekatan sendiri, bukan menerjemahkan 1:1.
 
-### 21.1 Mengganti peran `advance-mobile-platform` → perluas `flutter-package-core`
+### 21.1 [⚠️ SUPERSEDED oleh §23 — 13 Sep 2026] Mengganti peran `advance-mobile-platform` → perluas `flutter-package-core`
 
-`flutter-package-core` sudah lulus audit (§10) dan sudah punya fondasi monorepo Melos yang benar (`packages/*`). Daripada memakai `advance-mobile-platform` (provenance-nya tercampur, §10) atau bikin repo baru lagi (nambah beban maintenance, melanggar constraint #8), **[REKOMENDASI]**: tambah package baru ke `flutter-package-core`, ditulis dari nol:
+> Bagian ini dipertahankan sebagai jejak keputusan (bukan dihapus), konsisten dengan konvensi ADR yang dipakai di repo lain (ADR di-supersede, bukan diedit diam-diam). Keputusan di bawah ini **tidak lagi berlaku** — pemilik memutuskan sebaliknya di §23: `advance-mobile-platform` jadi repo utama, bukan `flutter-package-core`.
+
+`flutter-package-core` sudah lulus audit (§10) dan sudah punya fondasi monorepo Melos yang benar (`packages/*`). Daripada memakai `advance-mobile-platform` (provenance-nya tercampur, §10) atau bikin repo baru lagi (nambah beban maintenance, melanggar constraint #8), **[REKOMENDASI — DIGANTIKAN §23]**: tambah package baru ke `flutter-package-core`, ditulis dari nol:
 
 | Package baru | Tanggung jawab (pola generik, bukan tiruan) | Bukti maturity yang ditunjukkan |
 |---|---|---|
@@ -464,9 +468,11 @@ Pemilik mengonfirmasi: ketiga repo (`advance-mobile-platform`, `flutter-architec
 
 **Catatan yang tetap berlaku, tidak berubah oleh keputusan ini**: temuan di §10 soal `flutter-architecture-studi` — repo ini berisi commit asli 10 rekan kerja + nomor JIRA/PR internal — adalah **isu keberadaan repo itu sendiri di GitHub personal**, terpisah dari pertanyaan "boleh dipakai sebagai referensi desain atau tidak". Menggunakan polanya secara privat untuk proyek sendiri (hal yang wajar dilakukan banyak engineer) tidak menghapus perlunya kamu mengecek visibility repo tersebut dan mempertimbangkan kebijakan perusahaan soal kode + commit rekan kerja yang ada di akun personal.
 
-## 22. Build Plan Konsolidasi — Apa Saja yang Perlu Dibangun
+## 22. [⚠️ Item A-D dan F DIGANTIKAN §23 — 13 Sep 2026] Build Plan Konsolidasi — Apa Saja yang Perlu Dibangun
 
-Ini jawaban final untuk "apa saja yang perlu kita buat", menggabungkan §19 dan §21 jadi satu daftar kerja:
+> Tabel di bawah ini jejak keputusan sebelumnya. Item **E tetap berlaku**. Item **A-D dan F digantikan** oleh §23 (strategi baru: `advance-mobile-platform` jadi repo utama, bukan bangun ulang dari nol di `flutter-package-core`).
+
+Ini jawaban (versi awal, sudah direvisi) untuk "apa saja yang perlu kita buat", menggabungkan §19 dan §21 jadi satu daftar kerja:
 
 | # | Item | Target repo | Terinspirasi pola dari (privat, tidak dikutip langsung) | Scope singkat | Effort |
 |---|---|---|---|---|---|
@@ -480,3 +486,74 @@ Ini jawaban final untuk "apa saja yang perlu kita buat", menggabungkan §19 dan 
 **Total pekerjaan baru**: A-D (~2 minggu paruh waktu, masuk repo existing) + E-F (~6-7 minggu paruh waktu, 2 repo baru) = **~8-9 minggu paruh waktu** di luar Saldough. Kalau perlu dipangkas, urutan prioritas tetap: **E (Proyek Baru #1) paling penting** karena langsung mem-back-up diferensiator utama (§18) sekaligus sekarang menyerap 2 pola sumber (bank + gateway) jadi 1 artifact; A-D (paket `flutter-package-core`) prioritas kedua karena memperkuat cerita "Open Source" dengan kematangan setingkat platform kerja; F paling bisa ditunda jadi stretch goal.
 
 Item A-D **tidak butuh nama repo baru** (masuk `flutter-package-core` yang sudah ada) — jadi dari 2 keputusan terbuka di §20, **keputusan #4 (nama repo) sekarang hanya relevan untuk E dan F**, bukan bertambah jadi 4 repo.
+
+---
+
+## 23. Revisi Strategi — ✅ DIKONFIRMASI PEMILIK (13 Sep 2026): `advance-mobile-platform` sebagai Repo Utama
+
+**Keputusan pemilik**: `flutter-package-core` dinilai sudah agak ketinggalan jaman. `advance-mobile-platform` dipakai sebagai repo utama, dengan bagian-bagian yang masih berguna dari `flutter-package-core` diadopsi masuk. Ini mengubah §21.1 dan sebagian §22 (item A-D, F) — bagian lama tetap disimpan sebagai jejak keputusan (ditandai superseded), bukan dihapus.
+
+### 23.1 Audit ulang mendalam — apakah aman dijadikan repo utama?
+
+Sebelum menyetujui pergeseran strategi ini, saya jalankan sweep penuh ke **seluruh isi repo** `advance-mobile-platform` (bukan cuma sampling seperti audit pertama di §10) — cek semua `pubspec.yaml` (git dependency URL), semua `README.md` per package, `CHANGELOG.md`, isi lengkap `.gitlab/ci/*.yml`, dan commit dari `CI Bot`.
+
+**Hasil: hanya ada 2 titik referensi ke perusahaan di SELURUH repo** (13 package, puluhan file):
+1. `.gitlab-ci.yml` (root) — 1 baris: `tags: [bci-runner]`.
+2. `README.md` (root) — 3 link Notion (`Mobile Platform`, `Architecture`, `Onboarding`, `Developer Reference`).
+
+Tidak ada nama perusahaan lain (`Capital Flex`, `BCI` penuh, `KB-FMF`, dll — nol hit di luar 2 titik itu), tidak ada URL GitLab privat di pubspec manapun, tidak ada token/secret (yang ada di CI file cuma NAMA variabel seperti `CI_VERSIONING_BOT_TOKEN`, bukan isinya), dan semua contoh kode di README package (`api_network`, `dio_network`, `hive_storage`) pakai `api.example.com` generik. Commit dari `CI Bot` isinya cuma otomasi versioning package, tidak ada info sensitif.
+
+**[REKOMENDASI — kesimpulan]**: Ini beda kategori dari `flutter-dsl`/`flutter-architecture-studi(-bank)` di §10 — di sana leaknya struktural dan tersebar (banyak file, nama org berulang, bahkan commit orang lain). Di sini leaknya **sempit dan dangkal**: 2 file, 4 baris total, nol secret. Karena itu, strategi yang tepat bukan lagi "clean-room rebuild dari nol" (mahal, ~2 minggu seperti rencana lama di §21.1), tapi **sanitasi in-place** (jauh lebih murah).
+
+### 23.2 Rencana sanitasi
+
+1. Hapus `.gitlab-ci.yml` dan seluruh folder `.gitlab/ci/`. Bukan cuma soal kerahasiaan — GitLab CI memang tidak relevan lagi kalau host utamanya jadi GitHub. Ganti dengan GitHub Actions minimal (`flutter analyze` + `flutter test` per package via Melos).
+2. Hapus 3 link Notion di README, ganti jadi dokumentasi arsitektur yang ditulis langsung di repo ini (README/docs asli) — ini sekaligus upgrade nyata, karena link Notion privat toh tidak bisa dibuka siapa pun di luar perusahaan.
+
+Effort: **1-2 hari**.
+
+### 23.3 Keputusan terbuka baru: bagaimana dengan histori git?
+
+Sanitasi di atas menghapus filenya *ke depan*, tapi 50 commit lama tetap menyimpan `.gitlab-ci.yml` versi awal (dengan `bci-runner`) di histori kalau di-`git log -p`. Ini bukan kebocoran berat (cuma nama tag runner, bukan secret), tapi tetap perlu kamu putuskan sadar, karena ini publik dan sulit ditarik ulang setelah dibagikan ke recruiter:
+
+- **Opsi 1 — [REKOMENDASI] Pertahankan histori, tambah commit sanitasi di atasnya.** Risiko sisa: rendah (siapa pun yang cek `git log -p` bisa lihat kata "bci-runner" pernah ada — cuma nama, bukan secret/logic). Keuntungan: histori 50 commit asli ("built this incrementally over a week") **jadi bukti proses kerja nyata** — relevan untuk funnel EM (§15) soal "bagaimana cara kerja kamu", nilai portfolio yang hilang kalau di-squash.
+- **Opsi 2 — Fresh history (orphan commit / `git filter-repo`).** Menghilangkan jejak sepenuhnya, tapi histori commit yang otentik (nilai portfolio) ikut hilang, dan effort tambahan untuk rewrite history dengan benar.
+
+Saya condong ke **Opsi 1** karena residual risk-nya rendah dan histori commit itu sendiri adalah aset portfolio (pola Chris Banes/Jake Wharton di §3 — proses kerja yang bisa diverifikasi). Tapi ini keputusanmu — dicatat sebagai item terbuka baru di §20.
+
+### 23.4 Adopsi dari `flutter-package-core`
+
+Analisis overlap dulu — package mana yang genuinely baru vs sekadar duplikat yang lebih lemah:
+
+| Package `flutter-package-core` | Ada padanan di `advance-mobile-platform`? | Keputusan |
+|---|---|---|
+| `network` | Ya — `api_network`/`dio_network` (lebih matang, sudah dipisah per-layer) | **Tidak diadopsi** — redundan dan lebih lemah |
+| `storage` | Ya — `memory_storage`/`api_storage`/`hive_storage` (lebih granular) | **Tidak diadopsi** — redundan dan lebih lemah |
+| `exception` | Tidak — ini Firebase Auth/Firestore exception mapping (24+ tipe exception dari kode error Firebase), beda konsern dari `failures` (sealed Failure hierarchy generik) | **Diadopsi** — melengkapi, bukan duplikat |
+| `firestore` | Tidak — `advance-mobile-platform` fokus REST/Dio, belum ada lapisan Firestore-specific (query builder, pagination, `watchCollection`) | **Diadopsi** — memperluas cakupan ke app berbasis Firebase |
+| `security` | Tidak — AES encryption, HMAC hash belum ada di `advance-mobile-platform` | **Diadopsi** — juga relevan langsung untuk §23.5 di bawah |
+
+**Cara adopsi**: di-PORT (ditulis ulang mengikuti convention zona `advance-mobile-platform`: `core/`, `shared/`, `infrastructure/`, `fondation/`), bukan copy folder mentah — supaya konsisten dan tetap terasa "satu platform", bukan tempelan. Penempatan yang disarankan: `security` → `core/security` (sejajar `core/failures`/`core/models`); `firestore` → `infrastructure/storage/firestore_storage` (sejajar `hive_storage`); `exception` → `core/exceptions` (package baru, melengkapi `core/failures`, bukan menggantikannya).
+
+Effort: **3-5 hari** (porting kode yang sudah bekerja, bukan menulis dari nol — lebih cepat dari estimasi rebuild sebelumnya).
+
+### 23.5 Dampak ke item F (Proyek Baru #2 — package app-integrity)
+
+Karena `security` sekarang jadi bagian `advance-mobile-platform`, **[REKOMENDASI]** konsolidasikan: `IntegrityReport`/`SecurityPosture` (root/jailbreak detection + policy layer dari §19) dibangun sebagai **package baru DI DALAM `advance-mobile-platform`** (mis. `infrastructure/security/app_integrity`), bukan repo terpisah lagi. Scope teknisnya sama persis seperti di §19 (native check via MethodChannel + lapisan keputusan, bukan reimplementasi plugin yang sudah ada) — cuma pindah rumah.
+
+Dampaknya: **jumlah repo baru yang perlu dibuat turun dari 2 (item E+F) jadi hanya 1 (item E)** — lebih sejalan dengan constraint #8 (jangan bikin portfolio terlalu besar untuk dipelihara), dan sekaligus memperkuat cerita `advance-mobile-platform` sebagai satu platform yang koheren, bukan koleksi package tersebar.
+
+### 23.6 Peran baru `flutter-package-core`
+
+**[REKOMENDASI]** setelah bagian yang berguna diadopsi (§23.4), `flutter-package-core` **tidak lagi jadi bagian showcase aktif** di situs portfolio — 2 "platform package" yang tumpang tindih di depan recruiter justru terlihat kurang kurasi (anti-pattern breadth, §4). Boleh tetap ada di GitHub (sudah lulus audit, tidak masalah secara kerahasiaan) tapi tidak ditautkan dari Open Source di situs. **Firebase example hardcoded (keputusan #3, §20) tetap perlu dibereskan** terlepas dari keputusan ini — repo itu tetap publik ada di akun GitHub kamu, terlihat atau tidak dari portfolio.
+
+### 23.7 Build Plan — revisi final (menggantikan item A-D, F di §22)
+
+| Item | Repo | Deskripsi | Effort |
+|---|---|---|---|
+| A′ | `advance-mobile-platform` | Sanitasi: hapus `.gitlab-ci.yml`+`.gitlab/`, ganti GitHub Actions; hapus link Notion, ganti docs asli | 1-2 hari |
+| B′ | `advance-mobile-platform` | Port `exception`, `firestore`, `security` dari `flutter-package-core` ke struktur zona yang sesuai | 3-5 hari |
+| C′ | `advance-mobile-platform` | Package baru `app_integrity` (eks-item F) — native root/jailbreak detection + policy layer | ~2.5-3 minggu (sama seperti F sebelumnya, cuma pindah rumah) |
+| E (tidak berubah) | Repo baru (nama: keputusan #4) | Reference repo migrasi + gateway (§19, §21.2) | ~3-4 minggu |
+
+**Total waktu turun** dari estimasi sebelumnya (~8-9 minggu) jadi **~6-8 minggu paruh waktu**, karena tidak perlu lagi membangun `state_management`/`navigation`/`di` dari nol — itu sudah ada dan tinggal disanitasi.
