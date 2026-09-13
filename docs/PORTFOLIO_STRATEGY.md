@@ -418,7 +418,8 @@ Status keputusan yang diminta pemilik selama diskusi Phase 0, diperbarui tiap ka
 | 1 | Positioning statement | ✅ **Dikonfirmasi** (13 Sep 2026) | §6 — dipakai apa adanya |
 | 2 | Stack teknis situs | ✅ **Dikonfirmasi** (13 Sep 2026) | §7 — Astro + Tailwind + MDX, bukan Flutter web. Tambahan: wajib mendukung blog/artikel dari awal via Astro Content Collections (bukan halaman statis manual) |
 | 3 | Cara pembersihan Firebase example di `flutter-package-core` | ⏳ **Terbuka — didiskusikan berikutnya** | Opsi: (a) hapus `apps/example/lib/examples/firestore_example.dart`, atau (b) ganti hardcoded key/projectId jadi placeholder + instruksi "isi dengan project Firebase kamu sendiri". Lihat §10 |
-| 4 | Nama repo untuk 2 proyek baru wajib | ⏳ **Terbuka — didiskusikan berikutnya** | Perlu nama sebelum repo GitHub dibuat untuk Proyek Baru #1 (reference repo migrasi) dan Proyek Baru #2 (package app-integrity). Lihat §19 |
+| 4 | Nama repo untuk 2 proyek baru wajib | ⏳ **Terbuka — didiskusikan berikutnya** | Perlu nama sebelum repo GitHub dibuat untuk Proyek Baru #1/item E (reference repo migrasi+gateway) dan Proyek Baru #2/item F (package app-integrity). Lihat §19, §22 |
+| 5 | Batas "pakai repo di-exclude sebagai referensi" | ✅ **Dikonfirmasi** (13 Sep 2026) | §21.4 — `advance-mobile-platform`, `flutter-architecture-studi`, `flutter-architecture-studi-bank` boleh dipakai sebagai referensi pola PRIVAT untuk rebuild clean-room, TIDAK PERNAH dipublikasikan/ditautkan. Isu keberadaan `flutter-architecture-studi` (commit 10 rekan kerja) di GitHub personal tetap terbuka, terpisah dari keputusan ini |
 
 ---
 
@@ -456,3 +457,26 @@ Tidak ada perubahan pada estimasi effort Proyek Baru #1 di §19 (~3-4 minggu par
 - Proyek Baru #1 (§19) tetap 1 repo baru, sekarang dengan referensi pola yang lebih jelas dan matang secara desain, bukan proyek terpisah tambahan.
 - **Tidak ada proyek baru ke-3** yang perlu dibuat — perluasan `flutter-package-core` masuk ke repo yang sudah ada, sejalan dengan constraint #8 (jangan bikin portfolio terlalu besar untuk dipelihara).
 - `advance-mobile-platform`, `flutter-architecture-studi`, dan `flutter-architecture-studi-bank` tetap **tidak pernah dipublikasikan atau ditautkan** dari portfolio dalam bentuk apapun — perannya selesai sebagai referensi privat untuk desain ulang, sesuai §10.
+
+### 21.4 Klarifikasi batas "dipakai sebagai referensi" — ✅ DIKONFIRMASI PEMILIK (13 Sep 2026)
+
+Pemilik mengonfirmasi: ketiga repo (`advance-mobile-platform`, `flutter-architecture-studi`, `flutter-architecture-studi-bank`) **boleh dipakai sebagai referensi pola secara privat** untuk mendesain ulang, dengan syarat hasilnya adalah **versi tulisan ulang milik sendiri** — bukan kode/nama/struktur yang disalin. Ini konsisten dengan prinsip clean-room di §21 pembuka, sekarang berlaku eksplisit untuk ketiganya, termasuk konsep "gateway" di `flutter-architecture-studi` (native shell yang menjembatani ke banyak modul Flutter terpisah — pola umum, bukan implementasi spesifiknya).
+
+**Catatan yang tetap berlaku, tidak berubah oleh keputusan ini**: temuan di §10 soal `flutter-architecture-studi` — repo ini berisi commit asli 10 rekan kerja + nomor JIRA/PR internal — adalah **isu keberadaan repo itu sendiri di GitHub personal**, terpisah dari pertanyaan "boleh dipakai sebagai referensi desain atau tidak". Menggunakan polanya secara privat untuk proyek sendiri (hal yang wajar dilakukan banyak engineer) tidak menghapus perlunya kamu mengecek visibility repo tersebut dan mempertimbangkan kebijakan perusahaan soal kode + commit rekan kerja yang ada di akun personal.
+
+## 22. Build Plan Konsolidasi — Apa Saja yang Perlu Dibangun
+
+Ini jawaban final untuk "apa saja yang perlu kita buat", menggabungkan §19 dan §21 jadi satu daftar kerja:
+
+| # | Item | Target repo | Terinspirasi pola dari (privat, tidak dikutip langsung) | Scope singkat | Effort |
+|---|---|---|---|---|---|
+| A | Package `state_management` | `flutter-package-core` (existing) | `advance-mobile-platform/fondation/state_management` | Lapisan konsisten di atas BLoC — base class effect handling, event-state contract | 3-4 hari |
+| B | Package `navigation` | `flutter-package-core` (existing) | `advance-mobile-platform/fondation/navigation` | Type-safe routing abstraction generik | 2-3 hari |
+| C | Package `di` | `flutter-package-core` (existing) | `advance-mobile-platform/shared/di` | Scoped DI di atas GetIt — root-scope vs feature-scope | 3-4 hari |
+| D | Update `apps/example` | `flutter-package-core` (existing) | `advance-mobile-platform/app_example` | Demo A+B+C+package existing (exception/network/firestore/security) terpakai bersama dalam 1 app kecil | 2-3 hari |
+| E | Reference repo migrasi + gateway (**Proyek Baru #1**, §19) | Repo baru (nama: keputusan #4) | `flutter-architecture-studi-bank` (Strangler Fig, ADR, boundary adapter, DI ter-scope per-fitur) + `flutter-architecture-studi` (konsep gateway: 1 native shell → banyak modul Flutter independen) | Native shell/gateway → 2 modul Flutter contoh dijembatani via MethodChannel, 1 di antaranya mendemonstrasikan pola "legacy+v2 coexist" ala Strangler Fig dengan feature-flag, adapter sesi eksplisit, DI di-scope per-modul (pakai package D di atas), + 2-3 ADR pendek sebagai dokumentasi | ~3-4 minggu (sesuai §19, scope diperjelas bukan ditambah) |
+| F | Package app-integrity/security-policy (**Proyek Baru #2**, §19) | Repo baru (nama: keputusan #4) | Tidak ada repo referensi spesifik — dari pengalaman security kamu sendiri (SSL pinning, secure storage, root/jailbreak detection) | Sesuai §19 — tidak berubah | ~2.5-3 minggu (sesuai §19) |
+
+**Total pekerjaan baru**: A-D (~2 minggu paruh waktu, masuk repo existing) + E-F (~6-7 minggu paruh waktu, 2 repo baru) = **~8-9 minggu paruh waktu** di luar Saldough. Kalau perlu dipangkas, urutan prioritas tetap: **E (Proyek Baru #1) paling penting** karena langsung mem-back-up diferensiator utama (§18) sekaligus sekarang menyerap 2 pola sumber (bank + gateway) jadi 1 artifact; A-D (paket `flutter-package-core`) prioritas kedua karena memperkuat cerita "Open Source" dengan kematangan setingkat platform kerja; F paling bisa ditunda jadi stretch goal.
+
+Item A-D **tidak butuh nama repo baru** (masuk `flutter-package-core` yang sudah ada) — jadi dari 2 keputusan terbuka di §20, **keputusan #4 (nama repo) sekarang hanya relevan untuk E dan F**, bukan bertambah jadi 4 repo.
