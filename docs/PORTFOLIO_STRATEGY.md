@@ -305,3 +305,72 @@ Recruiter Funnel: Website → 2 case study → engineering evidence → GitHub/p
 Ini bukan "banyak aplikasi keren" — ini **1 aplikasi nyata + 1 case study tanpa aplikasi + bukti pendukung berbiaya rendah**. Pilihan ini didasarkan pada 3 evidence paling kuat dari riset: (1) breadth-over-curation terbukti melemahkan 2 dari 14 benchmark nyata, (2) tidak ada satupun benchmark yang berhasil membuat case study migrasi/arsitektur yang benar-benar dalam — ini celah yang kamu bisa isi karena kamu punya pengalamannya secara nyata, dan (3) kriteria Staff dari Monzo (satu-satunya ladder fintech+mobile yang ditemukan) persis cocok dengan "arsitektur lintas tim, migrasi ambigu, otoritas teknis" — yang paling pas dibuktikan lewat case study tertulis, bukan app baru.
 
 Risiko terbesar yang harus dikelola secara sadar: jangan sampai `flutter-package-core`/`flutter-dsl`/`advance-mobile-platform` dipublikasikan tanpa audit — ini satu-satunya bagian dari rencana ini yang punya risiko kerahasiaan nyata (§10), sisanya (Saldough, case study yang digeneralisasi, artikel security dengan snippet generik, envflare_cli) sudah aman by design.
+
+---
+
+## 19. Proyek Baru yang Wajib Dibangun (di luar reuse project existing)
+
+**Konteks pertanyaan ini**: rencana di §8-§18 sengaja menghindari membangun app baru untuk kategori native integration/security (§9) karena kode aslinya milik perusahaan. Tapi ini menyisakan satu masalah nyata yang muncul di §14: pada tahap **"5 menit — harus bisa diverifikasi"**, case study migrasi (Flagship #2) cuma berupa tulisan + diagram. Recruiter/EM teknis tidak bisa membuka kode apa pun untuk mengecek klaim itu. Tulisan yang bagus meyakinkan, tapi tulisan yang bisa **diverifikasi dengan cara diklik/dibaca kodenya** jauh lebih kuat — dan itu memerlukan kode baru yang sengaja dibangun generik (bukan reuse, bukan turunan kerja kantor).
+
+**[REKOMENDASI]** Dua proyek ini yang saya nilai *wajib* dibangun dari nol — bukan "karena keren", tapi karena masing-masing menutup gap verifikasi yang teridentifikasi di §14/§15 dan tidak bisa dipenuhi oleh Saldough atau repo existing manapun (§10). Sengaja dibatasi 2, bukan lebih — supaya tidak jatuh ke anti-pattern breadth-over-curation (§4).
+
+### Proyek Baru #1 (prioritas tertinggi) — Reference repo pola migrasi incremental native→Flutter
+
+**Kenapa wajib**: ini satu-satunya cara membuat Flagship #2 (case study migrasi) bisa diverifikasi, bukan sekadar dipercaya. Tanpa ini, bagian portfolio yang paling diferensiatif (§18, poin 2) justru paling lemah di tahap "5 menit" funnel recruiter.
+
+**Scope (generik, aman — bukan tiruan kerja kantor manapun)**:
+- Satu "legacy shell" mini (native Android sederhana, boleh dummy) yang mem-boot ke satu Flutter module lewat `MethodChannel`/`FlutterEngine` — mendemonstrasikan pola Strangler Fig: lama dan baru hidup berdampingan.
+- Satu contoh **bridge/adapter eksplisit** untuk session/credential antara sisi lama dan sisi Flutter (mis. `LegacySessionAdapter`) — meniru *pola*-nya (adapter sebagai satu-satunya titik silang legacy↔baru), bukan meniru nama kelas/struktur folder dari repo referensi manapun yang pernah kamu baca di kerjaan.
+- Feature-flag sederhana untuk switch rute lama vs baru per layar.
+- Test untuk bridge-nya (unit test adapter, bukan cuma widget test).
+- README dengan 1 diagram arsitektur (boundary legacy↔v2) — diagram inilah yang nanti dipakai ulang di case study Flagship #2, supaya case study dan repo saling menguatkan.
+
+**Yang HARUS dihindari**: jangan pernah menamai kelas/pattern persis seperti yang ada di `flutter-architecture-studi-bank` (mis. jangan pakai nama seperti `ArchitectureBrideController`, `V2ShellPage`, `IsolatedScope` dari repo itu apa adanya) — tulis ulang dengan penamaan dan struktur sendiri. Tujuannya membuktikan kamu paham **pola**-nya, bukan mereproduksi aset perusahaan.
+
+**Roadmap**:
+| Tahap | Deliverable | Tasks | Effort (kerja paruh waktu malam/akhir pekan) |
+|---|---|---|---|
+| A1 — Desain | Outline arsitektur + diagram awal | Tentukan boundary legacy/v2, tentukan 1 fitur contoh yang cukup untuk didemokan (mis. "profile screen" dummy) | 2-3 hari |
+| A2 — Legacy shell + bridge | Native shell app + adapter session | Bangun native Android minimal, buat 1 `MethodChannel` bridge, tulis adapter pattern | 1 minggu |
+| A3 — Flutter module + routing | Modul Flutter + feature flag routing | Flutter module yang menerima session dari native, feature flag untuk pilih rute lama/baru | 1 minggu |
+| A4 — Tests + README + diagram final | Repo siap publish | Unit test adapter, README dengan diagram, tautkan ke case study Flagship #2 | 3-5 hari |
+
+**Definition of done**: repo publik, README menjelaskan pola (bukan kode kantor), diagramnya dipakai juga di case study Flagship #2, ada test yang lulus di CI sederhana (GitHub Actions minimal).
+
+**Estimasi total**: ~3-4 minggu kerja paruh waktu.
+
+### Proyek Baru #2 (prioritas sedang) — Package "app integrity & security policy" untuk Flutter
+
+**Kenapa wajib, dan kenapa bukan sekadar wrapper**: `flutter_secure_storage`, `ssl_pinning_plugin`, `flutter_jailbreak_detection` sudah ada di pub.dev dan sudah matang — membuat versi "saya juga bisa" dari paket-paket ini justru terlihat kurang matang secara judgment (skill yang dinilai di level Staff, per Monzo L5, adalah *menyelesaikan masalah yang ambigu*, bukan mengerjakan ulang yang sudah selesai). **[REKOMENDASI]** yang wajib dibangun bukan wrapper storage/pinning itu sendiri, tapi **lapisan keputusan di atasnya**: sebuah package kecil yang menggabungkan sinyal-sinyal itu (status pinning tervalidasi, hasil deteksi root/jailbreak, ketersediaan secure storage) menjadi satu objek keputusan (`AppIntegrityGate` atau nama serupa) yang dipakai untuk men-gate flow sensitif di aplikasi finansial. Ini menunjukkan **kemampuan desain kebijakan keamanan**, bukan cuma bisa pakai plugin.
+
+**Scope**:
+- Native platform code (Kotlin untuk Android, Swift untuk iOS) untuk deteksi root/jailbreak dasar + deteksi debugger-attached — via `MethodChannel` (sekaligus memperkuat bukti native integration, redundan dengan Proyek #1 tapi dari sudut security).
+- Satu API publik yang mengombinasikan sinyal-sinyal itu menjadi `IntegrityReport`/`SecurityPosture` dengan level (mis. `trusted`/`degraded`/`blocked`) dan alasan yang bisa dibaca.
+- Contoh integrasi dengan cert-pinning check (validasi konfigurasi pinning ada & tidak default/kosong — bukan reimplementasi pinning-nya sendiri, cukup memverifikasi konfigurasinya benar).
+- `example/` app yang mendemonstrasikan cara pakai untuk men-gate 1 layar dummy ("transfer money" placeholder).
+- README + artikel (ini jadi bahan mentah artikel security di §11/Phase 4 — dua-duanya saling mendukung, bukan pekerjaan terpisah).
+
+**Roadmap**:
+| Tahap | Deliverable | Tasks | Effort |
+|---|---|---|---|
+| B1 — Desain API | Spesifikasi `IntegrityReport`/`SecurityPosture` | Tentukan level & sinyal yang masuk, tentukan native check apa yang benar-benar dibangun sendiri vs cukup didokumentasikan kenapa tidak reinvent (mis. cert pinning validasinya, bukan implementasi TLS-nya) | 2-3 hari |
+| B2 — Native checks | Kotlin + Swift root/jailbreak/debugger detection | MethodChannel Android + iOS | 1 minggu |
+| B3 — Policy layer + example app | Package + `example/` | Gabungkan sinyal jadi keputusan, bangun demo gating 1 layar | 4-5 hari |
+| B4 — Publish + artikel | Live di pub.dev + artikel security | Publish, tulis artikel yang mengacu langsung ke package ini sebagai bukti | 3-5 hari |
+
+**Definition of done**: package live di pub.dev (bukan cuma GitHub), artikel security (§11) menaut ke package ini sebagai bukti konkret, bukan sekadar teori.
+
+**Estimasi total**: ~2.5-3 minggu kerja paruh waktu.
+
+### Prioritas & urutan gabungan dengan roadmap §17
+
+Karena kamu bekerja penuh waktu sebagai Staff SWE, seluruh estimasi effort di atas dihitung sebagai **kerja paruh waktu (malam/akhir pekan)**, bukan hari kerja penuh — ini asumsi eksplisit, koreksi kalau tidak sesuai realita kamu. **[ASUMSI]**
+
+Urutan yang disarankan, disisipkan ke roadmap §17:
+1. Selesaikan Phase 0-2 (audit + foundation + Saldough) seperti rencana semula.
+2. **Proyek Baru #1** dikerjakan paralel dengan/tepat sebelum Phase 3 (case study migrasi) — supaya diagramnya bisa dipakai bersama.
+3. Phase 3 (tulis case study migrasi), sekarang dengan link ke Proyek Baru #1 sebagai bukti yang bisa diklik.
+4. **Proyek Baru #2** dikerjakan paralel dengan Phase 4 (artikel security) — dengan alasan yang sama, artikel dan package saling menaut.
+5. Phase 5 (polish & launch) seperti semula.
+
+Total tambahan waktu dari 2 proyek baru ini: **~6-7 minggu kerja paruh waktu**, di luar waktu yang sudah dialokasikan untuk Saldough sendiri. Ini bukan waktu kecil — kalau ternyata terlalu berat digabung dengan pekerjaan penuh waktu, prioritaskan **Proyek Baru #1 dulu** (dampaknya ke funnel recruiter lebih besar, karena langsung mem-back-up diferensiator utama di §18) dan jadikan Proyek Baru #2 sebagai stretch goal yang boleh menyusul setelah launch pertama.
