@@ -348,6 +348,8 @@ Risiko terbesar yang harus dikelola secara sadar: jangan sampai `flutter-package
 
 ### Proyek Baru #1 (prioritas tertinggi) — Reference repo pola migrasi incremental native→Flutter
 
+> **Nama repo dikonfirmasi (13 Sep 2026): `flutter-native-migration-showcase`** — lihat §20 keputusan #4 dan §23.7.
+
 **Kenapa wajib**: ini satu-satunya cara membuat Flagship #2 (case study migrasi) bisa diverifikasi, bukan sekadar dipercaya. Tanpa ini, bagian portfolio yang paling diferensiatif (§18, poin 2) justru paling lemah di tahap "5 menit" funnel recruiter.
 
 **Scope (generik, aman — bukan tiruan kerja kantor manapun)**:
@@ -418,7 +420,7 @@ Status keputusan yang diminta pemilik selama diskusi Phase 0, diperbarui tiap ka
 | 1 | Positioning statement | ✅ **Dikonfirmasi** (13 Sep 2026) | §6 — dipakai apa adanya |
 | 2 | Stack teknis situs | ✅ **Dikonfirmasi** (13 Sep 2026) | §7 — Astro + Tailwind + MDX, bukan Flutter web. Tambahan: wajib mendukung blog/artikel dari awal via Astro Content Collections (bukan halaman statis manual) |
 | 3 | Cara pembersihan Firebase example di `flutter-package-core` | ✅ **Dikonfirmasi & dieksekusi** (13 Sep 2026) | Dipilih opsi (b): hardcoded API key/projectId di `firestore_example.dart` diganti `String.fromEnvironment(...)` + placeholder, instruksi `--dart-define` ditambahkan di doc comment & README `apps/example`. Sudah di-commit & push ke `flutter-package-core` (branch `claude/portofolio-project-setup-vv9a56`). **Masih perlu kamu lakukan sendiri**: cek Firebase Console → Firestore Rules untuk project `arkariz-flutter-example-app`, pastikan tidak permisif (`allow read, write: if true`) — ini kontrol keamanan yang sesungguhnya, bukan key-nya. Lihat §10 |
-| 4 | Nama repo baru | ⏳ **Terbuka — didiskusikan berikutnya** | [DIREVISI §23] Sekarang hanya perlu 1 nama repo baru: item E (reference repo migrasi+gateway, §19/§22/§23.7). Item F sudah dikonsolidasi masuk `advance-mobile-platform` (§23.5), tidak perlu repo/nama terpisah lagi |
+| 4 | Nama repo baru | ✅ **Dikonfirmasi** (13 Sep 2026) | **`flutter-native-migration-showcase`** — untuk item E (reference repo migrasi+gateway, §19/§22/§23.7). Pola penamaan: kebab-case + prefix `flutter-` (konsisten dengan `flutter-package-core`/`flutter-dsl`), pakai "showcase" (bukan "usecase" — istilah itu sudah dipakai untuk arti lain: varian komponen Widgetbook BCI/mobile-dsl). Item F sudah dikonsolidasi masuk `advance-mobile-platform` (§23.5), tidak perlu repo/nama terpisah |
 | 5 | Batas "pakai repo di-exclude sebagai referensi" | ✅ **Dikonfirmasi** (13 Sep 2026) | §21.4 — `advance-mobile-platform`, `flutter-architecture-studi`, `flutter-architecture-studi-bank` boleh dipakai sebagai referensi pola PRIVAT untuk rebuild clean-room, TIDAK PERNAH dipublikasikan/ditautkan. Isu keberadaan `flutter-architecture-studi` (commit 10 rekan kerja) di GitHub personal tetap terbuka, terpisah dari keputusan ini |
 | 6 | `advance-mobile-platform` sebagai repo utama (menggantikan `flutter-package-core`) | ✅ **Dikonfirmasi** (13 Sep 2026) | §23 — audit ulang mendalam mengonfirmasi risiko sempit (cuma 2 file: `.gitlab-ci.yml` + link Notion di README), jadi strategi jadi sanitasi in-place, bukan rebuild dari nol. `flutter-package-core` diturunkan perannya (§23.6): bagian bergunanya diadopsi, tidak lagi jadi showcase aktif |
 | 7 | Histori git `advance-mobile-platform`: pertahankan vs fresh history | ⏳ **Terbuka — didiskusikan berikutnya** | §23.3 — rekomendasi: pertahankan histori (residual risk rendah, cuma nama tag CI runner lama, bukan secret) karena 50 commit asli adalah bukti proses kerja nyata. Alternatif: fresh history/squash kalau kamu mau nol jejak sama sekali |
@@ -554,6 +556,6 @@ Dampaknya: **jumlah repo baru yang perlu dibuat turun dari 2 (item E+F) jadi han
 | A′ | `advance-mobile-platform` | Sanitasi: hapus `.gitlab-ci.yml`+`.gitlab/`, ganti GitHub Actions; hapus link Notion, ganti docs asli | 1-2 hari |
 | B′ | `advance-mobile-platform` | Port `exception`, `firestore`, `security` dari `flutter-package-core` ke struktur zona yang sesuai | 3-5 hari |
 | C′ | `advance-mobile-platform` | Package baru `app_integrity` (eks-item F) — native root/jailbreak detection + policy layer | ~2.5-3 minggu (sama seperti F sebelumnya, cuma pindah rumah) |
-| E (tidak berubah) | Repo baru (nama: keputusan #4) | Reference repo migrasi + gateway (§19, §21.2) | ~3-4 minggu |
+| E (tidak berubah) | Repo baru: **`flutter-native-migration-showcase`** ✅ (13 Sep 2026) | Reference repo migrasi + gateway (§19, §21.2) | ~3-4 minggu |
 
 **Total waktu turun** dari estimasi sebelumnya (~8-9 minggu) jadi **~6-8 minggu paruh waktu**, karena tidak perlu lagi membangun `state_management`/`navigation`/`di` dari nol — itu sudah ada dan tinggal disanitasi.
