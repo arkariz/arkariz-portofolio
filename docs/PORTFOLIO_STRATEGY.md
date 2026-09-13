@@ -124,6 +124,19 @@ Alasan teknis (bukan dari benchmark riset — ini keputusan engineering langsung
 - **Maintenance rendah untuk individual developer** — full static, tidak perlu server/backend, deploy ke Firebase Hosting (konfigurasi `.firebaserc`/`firebase.json` yang sudah ada di repo ini bisa dipakai lagi) atau Vercel/Netlify.
 - Alternatif yang juga valid kalau kamu lebih familiar dengan React ecosystem secara umum: **Next.js** (static export) — trade-off-nya sedikit lebih berat dari sisi JS bundle default dibanding Astro, tapi ekosistemnya lebih besar. Disebut sebagai alternatif, bukan rekomendasi utama, karena prioritas situs ini (SEO + low maintenance + konten-berat) lebih pas dengan kekuatan utama Astro.
 
+### Tambahan keputusan #2 — ✅ DIKONFIRMASI PEMILIK (13 Sep 2026): stack wajib mendukung blog/artikel dari awal
+
+Pemilik menambahkan syarat: stack yang dipilih harus mendukung pembuatan blog/artikel di situs (bukan cuma 2-3 halaman statis yang ditempel manual). **Astro dari sananya memang dirancang untuk ini** — bukan tambahan yang perlu dicari-cari, jadi ini justru menguatkan pilihan Astro di atas, bukan mengubahnya:
+
+- **Content Collections (`astro:content`)** — Engineering Notes/blog jadi koleksi artikel bertipe (`src/content/notes/*.mdx`), dengan skema frontmatter tervalidasi (Zod): `title`, `date`, `summary`, `tags`, `draft`. Nulis artikel baru = tambah 1 file `.mdx`, tidak perlu sentuh routing/komponen — cocok untuk ritme individual (tulis kapan sempat, bukan pipeline rumit).
+- **Listing + halaman detail otomatis** — 1 halaman index yang men-generate daftar dari collection, 1 dynamic route (`[...slug].astro`) untuk halaman detail per artikel. Jadi "Engineering Notes" bisa mulai dari 2-3 artikel (§17 Phase 4) dan tumbuh jadi blog rutin (pola #3 di §3 — sinyal otoritas jangka panjang) kapan pun tanpa restrukturisasi.
+- **Syntax highlighting bawaan (Shiki)** — penting karena artikel security/migrasi (§11, §19) akan menyertakan code snippet generik; tidak perlu setup library terpisah.
+- **RSS feed** (`@astrojs/rss`, tinggal tambah 1 file) — sinyal "blog beneran", murah untuk ditambahkan, mendukung pola blog-rutin yang muncul di riset (avanderlee.com, vadimbulavin.com, §3 poin 3).
+- **SEO per-artikel** (title/description/OG tag per halaman) — mendukung tahap "30 detik/2 menit" di funnel recruiter (§14) kalau artikel dibagikan langsung (mis. di LinkedIn) tanpa lewat homepage dulu.
+- **Tags/kategori** dari frontmatter — memisahkan artikel "Engineering Notes" (deep-dive teknis) dari kemungkinan kategori lain di masa depan, tanpa perlu migrasi struktur data kalau nanti mau menambah jenis tulisan baru.
+
+Baris IA di §7 untuk "Engineering Notes" diperbarui: dibangun sebagai **content collection sejak awal** (bukan halaman statis manual), meski isinya baru 2-3 artikel di awal — supaya kalau nanti mau jadi blog rutin, tidak perlu bongkar ulang arsitekturnya.
+
 Repo `personal_portofolio` (Flutter) yang ada sekarang akan di-wipe total sesuai kesepakatan awal sesi ini, diganti struktur project Astro baru di Phase 1.
 
 ## 8. Flagship Project Strategy
@@ -402,6 +415,6 @@ Status keputusan yang diminta pemilik selama diskusi Phase 0, diperbarui tiap ka
 | # | Keputusan | Status | Detail |
 |---|---|---|---|
 | 1 | Positioning statement | ✅ **Dikonfirmasi** (13 Sep 2026) | §6 — dipakai apa adanya |
-| 2 | Stack teknis situs | ✅ **Dikonfirmasi** (13 Sep 2026) | §7 — Astro + Tailwind + MDX, bukan Flutter web |
+| 2 | Stack teknis situs | ✅ **Dikonfirmasi** (13 Sep 2026) | §7 — Astro + Tailwind + MDX, bukan Flutter web. Tambahan: wajib mendukung blog/artikel dari awal via Astro Content Collections (bukan halaman statis manual) |
 | 3 | Cara pembersihan Firebase example di `flutter-package-core` | ⏳ **Terbuka — didiskusikan berikutnya** | Opsi: (a) hapus `apps/example/lib/examples/firestore_example.dart`, atau (b) ganti hardcoded key/projectId jadi placeholder + instruksi "isi dengan project Firebase kamu sendiri". Lihat §10 |
 | 4 | Nama repo untuk 2 proyek baru wajib | ⏳ **Terbuka — didiskusikan berikutnya** | Perlu nama sebelum repo GitHub dibuat untuk Proyek Baru #1 (reference repo migrasi) dan Proyek Baru #2 (package app-integrity). Lihat §19 |
