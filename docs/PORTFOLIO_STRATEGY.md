@@ -553,7 +553,7 @@ Dampaknya: **jumlah repo baru yang perlu dibuat turun dari 2 (item E+F) jadi han
 
 | Item | Repo | Deskripsi | Effort |
 |---|---|---|---|
-| A′ | `advance-mobile-platform` | Sanitasi: hapus `.gitlab-ci.yml`+`.gitlab/`, ganti GitHub Actions; hapus link Notion, ganti docs asli | 1-2 hari |
+| A′ | `advance-mobile-platform` | ✅ **Selesai (13 Sep 2026)** — Sanitasi: hapus `.gitlab-ci.yml`+`.gitlab/`, ganti GitHub Actions; hapus link Notion, ganti docs asli. PR: [arkariz/advance-mobile-platform#2](https://github.com/arkariz/advance-mobile-platform/pull/2) | 1-2 hari |
 | B′ | `advance-mobile-platform` | Port `exception`, `firestore`, `security` dari `flutter-package-core` ke struktur zona yang sesuai | 3-5 hari |
 | C′ | `advance-mobile-platform` | Package baru `app_integrity` (eks-item F) — native root/jailbreak detection + policy layer | ~2.5-3 minggu (sama seperti F sebelumnya, cuma pindah rumah) |
 | E (tidak berubah) | Repo baru: **`flutter-native-migration-showcase`** ✅ (13 Sep 2026) | Reference repo migrasi + gateway (§19, §21.2) | ~3-4 minggu |
