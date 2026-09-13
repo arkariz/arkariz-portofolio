@@ -573,6 +573,7 @@ Dengan keputusan #1-#7 (§20) semuanya selesai, ini daftar tunggal yang jadi ruj
 | **`advance-mobile-platform`** | Open Source utama — platform toolkit (state management, navigation, DI, network, storage, models, failures + `exception`/`firestore`/`security` yang diadopsi dari `flutter-package-core` + package baru `app_integrity`) | Sanitasi + porting, §23 |
 | **`flutter-native-migration-showcase`** (baru) | Flagship #2 — reference repo migrasi native→Flutter + gateway, membuktikan case study migrasi bisa diverifikasi | Belum dibuat, §19/§21.2/§23.7 |
 | **`envflare_cli`** | Open Source pendukung — CLI tooling nyata | Poles README+demo, Phase 4 |
+| `memeapp` | **Bukan repo showcase** — cuma sumber 1-2 kalimat proof point kuantitatif di About/Resume (§24.1), tidak ditautkan/ditampilkan sebagai project | Tidak ada tindakan lebih lanjut ke repo-nya |
 
 **Tidak masuk portfolio** (dengan alasan masing-masing, semua sudah diaudit langsung — lihat §10):
 
@@ -586,11 +587,18 @@ Dengan keputusan #1-#7 (§20) semuanya selesai, ini daftar tunggal yang jadi ruj
 | `new-health-duel` | Dibangun via AI-agent porting dari reference project, bukan didesain dari nol — tidak jujur diklaim sebagai "produk yang saya bangun" |
 | `autoledger-companion-android` | Scaffold generik AI Studio, bukan produk yang dikembangkan sungguhan |
 
-**Belum pernah dievaluasi di sesi ini** (ada di scope akun, tapi tidak disebut di brief awal maupun diskusi sejauh ini) — disebutkan di sini demi kelengkapan, bukan diam-diam diabaikan:
+### 24.1 `memeapp` — ✅ diaudit (13 Sep 2026), dipakai sebagai proof point saja
 
-| Repo | Catatan singkat (belum di-audit mendalam) |
-|---|---|
-| `linguini` | Per CLAUDE.md repo itu sendiri: aplikasi personal-use untuk 1 keluarga spesifik ("n=1 evidence base... explicitly not a market product yet") — kemungkinan besar tidak cocok jadi flagship karena memang didesain bukan untuk audiens umum, tapi belum pernah dibahas eksplisit dengan kamu |
-| `memeapp` | Sekilas ada PRD ("Grudge" — usage limiter Android dengan mekanik "roast"), tech plan, dan dokumen Play Console usage-access declaration (artinya sempat disiapkan untuk rilis Play Store sungguhan) — ini berpotensi jadi kandidat menarik (product thinking + native Android permission handling), tapi belum pernah dievaluasi kematangannya sama sekali |
+Audit penuh (git log, struktur kode, sweep kerahasiaan) terhadap `memeapp` ("Grudge" — usage limiter Android dengan mekanik "roast", package `com.arkarizdev.bonked`):
 
-Kalau kamu mau, saya bisa audit `memeapp` (dan `linguini` kalau relevan) dengan cara yang sama seperti repo lain sebelum dianggap final — tapi daftar 5 repo di atas sudah cukup untuk mulai eksekusi roadmap kalau kamu tidak mau menambah scope lagi.
+- **Kerahasiaan: bersih total** — package name sepenuhnya personal, signing key dikelola benar (`key.properties` di-gitignore, tidak ada `.jks` ter-commit), API key Giphy/PostHog lewat `BuildConfig` (build-time injection, bukan hardcode).
+- **Kematangan jauh di atas dugaan awal**: ~5.593 baris Kotlin native + 1.311 baris test Kotlin (9 file test cocok 1:1 dengan komponen utama: watchdog service, overlay controller, state machine, gateway pattern) + ~3.089 baris Dart. Pakai **Pigeon** (tool resmi Google untuk typed platform channel, lebih rigorous dari raw `MethodChannel`). Ada keputusan compliance yang halus (sengaja hindari `QUERY_ALL_PACKAGES` demi Play Console declaration) dan trade-off reasoning tertulis eksplisit di tech plan ("two languages in one repo... low-regret and reversible until Phase 2").
+- **Tegangan dengan positioning**: app ini di luar domain fintech — kalau dijadikan flagship/case study penuh, melanggar prinsip "satu tesis konsisten" (§3 pola Chris Banes) dan berisiko breadth-over-curation (§4).
+
+**Keputusan pemilik (13 Sep 2026)**: dipakai sebagai **proof point singkat saja** — 1-2 kalimat kuantitatif di About/Resume (native Android depth, tested, Pigeon bridge), **bukan** flagship, **bukan** case study terpisah, **bukan** Engineering Note. Pola ini meniru cara Chris Banes mencantumkan app konsumer di luar tesis utamanya ("UI craft") sebagai 1 baris resume kuantitatif ("top 100 Google Play, 6.5M installs, diakuisisi") — bukan dihilangkan, bukan juga dijadikan flagship.
+
+Draft kalimat proof point (bahan untuk Phase 1, §7 About/Resume): *"Membangun aplikasi Android native+Flutter solo dari nol (watchdog service, typed Pigeon bridge, overlay controller) — ~6.900 baris Kotlin+Dart dengan cakupan unit test penuh di komponen native-nya."* — Angka disesuaikan lagi saat penulisan final, jangan dikutip mentah tanpa verifikasi ulang saat itu.
+
+### 24.2 `linguini` — belum dievaluasi
+
+Belum diaudit di sesi ini. Per CLAUDE.md repo itu sendiri: aplikasi personal-use untuk 1 keluarga spesifik ("n=1 evidence base... explicitly not a market product yet") — kemungkinan besar tidak cocok jadi flagship karena memang didesain bukan untuk audiens umum. Bisa diaudit kalau kamu mau, tapi tidak mendesak berdasarkan deskripsi repo itu sendiri.
