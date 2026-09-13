@@ -423,7 +423,7 @@ Status keputusan yang diminta pemilik selama diskusi Phase 0, diperbarui tiap ka
 | 4 | Nama repo baru | ✅ **Dikonfirmasi** (13 Sep 2026) | **`flutter-native-migration-showcase`** — untuk item E (reference repo migrasi+gateway, §19/§22/§23.7). Pola penamaan: kebab-case + prefix `flutter-` (konsisten dengan `flutter-package-core`/`flutter-dsl`), pakai "showcase" (bukan "usecase" — istilah itu sudah dipakai untuk arti lain: varian komponen Widgetbook BCI/mobile-dsl). Item F sudah dikonsolidasi masuk `advance-mobile-platform` (§23.5), tidak perlu repo/nama terpisah |
 | 5 | Batas "pakai repo di-exclude sebagai referensi" | ✅ **Dikonfirmasi** (13 Sep 2026) | §21.4 — `advance-mobile-platform`, `flutter-architecture-studi`, `flutter-architecture-studi-bank` boleh dipakai sebagai referensi pola PRIVAT untuk rebuild clean-room, TIDAK PERNAH dipublikasikan/ditautkan. Isu keberadaan `flutter-architecture-studi` (commit 10 rekan kerja) di GitHub personal tetap terbuka, terpisah dari keputusan ini |
 | 6 | `advance-mobile-platform` sebagai repo utama (menggantikan `flutter-package-core`) | ✅ **Dikonfirmasi** (13 Sep 2026) | §23 — audit ulang mendalam mengonfirmasi risiko sempit (cuma 2 file: `.gitlab-ci.yml` + link Notion di README), jadi strategi jadi sanitasi in-place, bukan rebuild dari nol. `flutter-package-core` diturunkan perannya (§23.6): bagian bergunanya diadopsi, tidak lagi jadi showcase aktif |
-| 7 | Histori git `advance-mobile-platform`: pertahankan vs fresh history | ⏳ **Terbuka — didiskusikan berikutnya** | §23.3 — rekomendasi: pertahankan histori (residual risk rendah, cuma nama tag CI runner lama, bukan secret) karena 50 commit asli adalah bukti proses kerja nyata. Alternatif: fresh history/squash kalau kamu mau nol jejak sama sekali |
+| 7 | Histori git `advance-mobile-platform`: pertahankan vs fresh history | ✅ **Dikonfirmasi (13 Sep 2026)** — pertahankan | §23.3 — 50 commit asli dipertahankan sebagai bukti proses kerja nyata; residual risk diterima (cuma nama tag CI runner lama, bukan secret). Sanitasi (§23.2) dilakukan sebagai commit baru di atas histori yang ada, bukan rewrite/squash |
 
 ---
 
@@ -559,3 +559,38 @@ Dampaknya: **jumlah repo baru yang perlu dibuat turun dari 2 (item E+F) jadi han
 | E (tidak berubah) | Repo baru: **`flutter-native-migration-showcase`** ✅ (13 Sep 2026) | Reference repo migrasi + gateway (§19, §21.2) | ~3-4 minggu |
 
 **Total waktu turun** dari estimasi sebelumnya (~8-9 minggu) jadi **~6-8 minggu paruh waktu**, karena tidak perlu lagi membangun `state_management`/`navigation`/`di` dari nol — itu sudah ada dan tinggal disanitasi.
+
+---
+
+## 24. Daftar Final Repo Portfolio — Semua Keputusan Sudah Terkonfirmasi (13 Sep 2026)
+
+Dengan keputusan #1-#7 (§20) semuanya selesai, ini daftar tunggal yang jadi rujukan final:
+
+| Repo | Peran di portfolio | Status |
+|---|---|---|
+| **`arkariz-portofolio`** | Situs portfolio itu sendiri (Astro + Tailwind + MDX, §7) | Di-wipe & dibangun ulang, Phase 1 |
+| **`Saldough`** | Flagship #1 — produk nyata, case study product engineering | Sedang berjalan, Phase 2 |
+| **`advance-mobile-platform`** | Open Source utama — platform toolkit (state management, navigation, DI, network, storage, models, failures + `exception`/`firestore`/`security` yang diadopsi dari `flutter-package-core` + package baru `app_integrity`) | Sanitasi + porting, §23 |
+| **`flutter-native-migration-showcase`** (baru) | Flagship #2 — reference repo migrasi native→Flutter + gateway, membuktikan case study migrasi bisa diverifikasi | Belum dibuat, §19/§21.2/§23.7 |
+| **`envflare_cli`** | Open Source pendukung — CLI tooling nyata | Poles README+demo, Phase 4 |
+
+**Tidak masuk portfolio** (dengan alasan masing-masing, semua sudah diaudit langsung — lihat §10):
+
+| Repo | Kenapa tidak masuk |
+|---|---|
+| `flutter-package-core` | Bagian bergunanya sudah diadopsi ke `advance-mobile-platform` (§23.4/§23.6); tetap ada di GitHub tapi tidak ditautkan dari situs, supaya tidak ada 2 "platform package" tumpang tindih |
+| `flutter-dsl` | Gagal audit — berisi link literal ke wiki internal & org GitHub privat perusahaan |
+| `flutter-architecture-studi` | Mirror repo tim kantor dengan commit asli 10 orang + JIRA/PR internal — hanya boleh jadi referensi pola privat (§21.4), isu keberadaannya di GitHub personal tetap terbuka di luar scope portfolio |
+| `flutter-architecture-studi-bank` | Source code asli aplikasi banking klien — hanya boleh jadi referensi pola privat (§21.4) |
+| `fullstack-autoledger` | Web full-stack (React+NestJS), bukan mobile — di luar positioning |
+| `new-health-duel` | Dibangun via AI-agent porting dari reference project, bukan didesain dari nol — tidak jujur diklaim sebagai "produk yang saya bangun" |
+| `autoledger-companion-android` | Scaffold generik AI Studio, bukan produk yang dikembangkan sungguhan |
+
+**Belum pernah dievaluasi di sesi ini** (ada di scope akun, tapi tidak disebut di brief awal maupun diskusi sejauh ini) — disebutkan di sini demi kelengkapan, bukan diam-diam diabaikan:
+
+| Repo | Catatan singkat (belum di-audit mendalam) |
+|---|---|
+| `linguini` | Per CLAUDE.md repo itu sendiri: aplikasi personal-use untuk 1 keluarga spesifik ("n=1 evidence base... explicitly not a market product yet") — kemungkinan besar tidak cocok jadi flagship karena memang didesain bukan untuk audiens umum, tapi belum pernah dibahas eksplisit dengan kamu |
+| `memeapp` | Sekilas ada PRD ("Grudge" — usage limiter Android dengan mekanik "roast"), tech plan, dan dokumen Play Console usage-access declaration (artinya sempat disiapkan untuk rilis Play Store sungguhan) — ini berpotensi jadi kandidat menarik (product thinking + native Android permission handling), tapi belum pernah dievaluasi kematangannya sama sekali |
+
+Kalau kamu mau, saya bisa audit `memeapp` (dan `linguini` kalau relevan) dengan cara yang sama seperti repo lain sebelum dianggap final — tapi daftar 5 repo di atas sudah cukup untuk mulai eksekusi roadmap kalau kamu tidak mau menambah scope lagi.
