@@ -82,11 +82,13 @@ Dikuatkan silang oleh sumber lain: **Artsy** [FAKTA — verified] membedakan Sta
 
 **[INFERENSI] Kesimpulan paling penting untuk kamu**: pembeda Senior vs Staff bukan "menulis kode lebih banyak/lebih baik", tapi (a) **kepemilikan perubahan arsitektur skala besar/lintas tim**, (b) **menyelesaikan ambiguitas** — bukan mengerjakan tugas yang sudah didefinisikan orang lain, dan (c) **otoritas teknis yang diakui lintas tim/disiplin**. Pengalaman migrasi native→Flutter skala besar tanpa rewrite total yang sudah kamu punya **persis** cocok dengan kriteria L4/L5 Monzo ini — ini bukan proyek portfolio baru yang perlu dibangun, ini bukti yang sudah ada dan tinggal dipresentasikan dengan benar (lihat §9).
 
-## 6. Positioning Recommendation
+## 6. Positioning Recommendation — ✅ DIKONFIRMASI PEMILIK (13 Sep 2026)
 
-**[REKOMENDASI]** Jangan posisikan diri sebagai "Flutter Developer" (terlalu sempit, terkesan junior/mid) maupun sekadar "Senior Mobile Engineer" generik (tidak membedakan dari ribuan profil serupa). Berdasarkan evidence di atas:
+**[REKOMENDASI — DITERIMA]** Jangan posisikan diri sebagai "Flutter Developer" (terlalu sempit, terkesan junior/mid) maupun sekadar "Senior Mobile Engineer" generik (tidak membedakan dari ribuan profil serupa). Berdasarkan evidence di atas:
 
 > **Mobile Engineer (Flutter/Android/iOS) dengan pengalaman produksi 5+ tahun di fintech/banking — spesialisasi pada arsitektur Flutter, migrasi native-ke-Flutter skala besar secara bertahap, dan rekayasa native integration, security, serta correctness finansial.**
+
+Ini adalah positioning statement final — dipakai apa adanya di Home/hero, About, dan resume (§7, §14).
 
 Alasan (bukan opini kosong):
 - Cocok dengan pola #6 (satu tesis konsisten, seperti Chris Banes) — tesis kamu adalah **"financial-grade mobile engineering"**, bukan sekadar "saya bisa Flutter".
@@ -103,14 +105,26 @@ Struktur final:
 Home        → hero: positioning statement + 3 bukti konkret + CTA ke 2 case study utama
 Work         → 2 flagship case study (dalam) + 1-2 entri pendukung (ringkas, jujur soal provenance)
 Engineering Notes → 2-3 artikel teknis (bukan blog rutin dulu — realistis untuk individual)
-Open Source  → envflare_cli, flutter-package-core, flutter-dsl (setelah audit konfidensialitas, lihat §9)
+Open Source  → envflare_cli, flutter-package-core (setelah cleanup Firebase example, §10) — flutter-dsl DIKELUARKAN (gagal audit)
 About        → bio naratif 1 halaman (prosa, bukan bullet)
 Resume       → halaman terpisah, bisa diunduh PDF
 ```
 
 Ini flat, sesuai pola #6, dan menghindari kesan "content business" (anti-pattern FilledStacks/Code With Andrea) karena tidak ada nav "Courses"/"Services".
 
-**Catatan teknis khusus (karena repo ini sendiri adalah project Flutter):** menjalankan portfolio di Flutter web itu tematis pas (bukti skill langsung, pola Jitendra Mistry) TAPI harus hindari jebakan canvaskit-only (anti-pattern #2). **[REKOMENDASI]**: pakai Flutter web dengan renderer yang menghasilkan DOM/text asli untuk konten kritikal (nama, headline, ringkasan case study, link), atau paling tidak sediakan fallback HTML/meta tag yang terindeks. Kalau ini butuh effort ekstra yang tidak sepadan, alternatif yang lebih aman untuk SEO adalah static site biasa (mis. Flutter web hanya untuk 1 komponen demo interaktif yang ditanam, bukan seluruh situs). Ini keputusan teknis yang perlu didiskusikan lagi saat Phase 1 — ditandai sebagai keputusan terbuka, bukan final.
+### Tech stack situs — ✅ DIKONFIRMASI PEMILIK (13 Sep 2026): tidak pakai Flutter web
+
+Keputusan pemilik: repo `personal_portofolio` (Flutter) yang ada sekarang **tidak dilanjutkan** — situs portfolio dibangun ulang dengan front-end framework web biasa, bukan Flutter web. Ini sejalan dengan temuan audit di §4/anti-pattern #2 (Jitendra Mistry: portfolio canvaskit-only nyaris tak terindeks mesin pencari) — jadi keputusan ini justru menghilangkan satu risiko yang sudah teridentifikasi, bukan cuma soal selera.
+
+**[REKOMENDASI]** Stack: **Astro** + Tailwind CSS, konten case study/artikel dalam MDX, di-deploy sebagai static site.
+
+Alasan teknis (bukan dari benchmark riset — ini keputusan engineering langsung, karena riset benchmark tidak mendalami stack web yang dipakai portfolio lain):
+- **Output default nol-JS** — Astro merender ke HTML statis by default, komponen interaktif (mis. visualizer arsitektur ala Sujit More kalau nanti mau dibuat) cukup jadi "island" tersendiri (boleh pakai React/Vue di dalamnya) tanpa membebani seluruh situs. Ini langsung menutup celah SEO/crawlability yang jadi masalah nyata di Flutter-web-only (anti-pattern #2).
+- **MDX cocok untuk Engineering Notes & case study** — mendukung alur "dokumentasi dulu" yang memang jadi kebiasaan kamu di semua repo lain (Saldough, Linguini, dst.) — nulis Markdown, bukan berjuang dengan JSX/widget tree untuk sekadar menampilkan artikel.
+- **Maintenance rendah untuk individual developer** — full static, tidak perlu server/backend, deploy ke Firebase Hosting (konfigurasi `.firebaserc`/`firebase.json` yang sudah ada di repo ini bisa dipakai lagi) atau Vercel/Netlify.
+- Alternatif yang juga valid kalau kamu lebih familiar dengan React ecosystem secara umum: **Next.js** (static export) — trade-off-nya sedikit lebih berat dari sisi JS bundle default dibanding Astro, tapi ekosistemnya lebih besar. Disebut sebagai alternatif, bukan rekomendasi utama, karena prioritas situs ini (SEO + low maintenance + konten-berat) lebih pas dengan kekuatan utama Astro.
+
+Repo `personal_portofolio` (Flutter) yang ada sekarang akan di-wipe total sesuai kesepakatan awal sesi ini, diganti struktur project Astro baru di Phase 1.
 
 ## 8. Flagship Project Strategy
 
@@ -231,19 +245,20 @@ GitHub / pub.dev (bukti yang bisa diverifikasi sendiri oleh recruiter/EM)
 - Deliverables: keputusan tertulis mana dari `flutter-package-core`/`flutter-dsl` yang aman dipublikasikan.
 - Tasks:
   - ✅ **Selesai (13 Sep 2026)**: audit isi `flutter-package-core` dan `flutter-dsl` dibanding pola `advance-mobile-platform`/`flutter-architecture-studi-bank` — hasil di §10: `flutter-package-core` lulus (dengan 1 cleanup wajib: hapus/rotasi Firebase config contoh di `apps/example`), `flutter-dsl` gagal total (berisi link wiki internal & org GitHub privat perusahaan, exclude permanen dari portfolio).
-  - ⏳ **Masih perlu keputusan kamu**: konfirmasi/revisi positioning statement final (draf di §6), putuskan stack teknis situs (Flutter web vs alternatif, lihat §7), tentukan cara pembersihan Firebase example di `flutter-package-core` (hapus filenya vs ganti jadi placeholder+instruksi).
+  - ✅ **Dikonfirmasi pemilik (13 Sep 2026)**: positioning statement final (§6) — diterima apa adanya. Stack teknis situs (§7) — **bukan Flutter web**, pakai Astro + Tailwind + MDX.
+  - ⏳ **Masih perlu keputusan kamu**: cara pembersihan Firebase example di `flutter-package-core` (hapus filenya vs ganti jadi placeholder+instruksi) — §10/§20; nama repo untuk 2 proyek baru wajib — §19/§20.
   - ⏳ **Rekomendasi tambahan (di luar scope portfolio)**: cek visibility repo `arkariz/flutter-dsl` di GitHub settings.
-- Effort: 2-3 hari (audit sudah selesai; sisanya cuma keputusan, bukan riset lagi).
+- Effort: 2-3 hari (audit & keputusan besar sudah selesai; sisanya 2 keputusan kecil, bukan riset lagi).
 - Dependencies: tidak ada.
-- Definition of done: daftar hijau/merah repo per §10 dikonfirmasi oleh kamu secara eksplisit.
+- Definition of done: daftar hijau/merah repo per §10 dikonfirmasi oleh kamu secara eksplisit — **tercapai**, tinggal 2 keputusan kecil di atas.
 
 **Phase 1 — Portfolio Foundation**
-- Objective: wipe repo lama, bangun skeleton situs sesuai IA §7.
-- Deliverables: Home, About, Resume, nav kosong untuk Work/Engineering Notes/Open Source.
-- Tasks: setup project baru, deploy pipeline (Firebase Hosting sudah ada konfigurasi `.firebaserc`/`firebase.json` di repo — bisa dipakai lagi), tulis positioning statement final & bio naratif.
+- Objective: wipe repo Flutter lama (`personal_portofolio`), bangun skeleton situs Astro sesuai IA §7.
+- Deliverables: Home, About, Resume, nav kosong untuk Work/Engineering Notes/Open Source — sebagai project Astro, bukan Flutter.
+- Tasks: `npm create astro@latest`, setup Tailwind + MDX integration, deploy pipeline (Firebase Hosting sudah ada konfigurasi `.firebaserc`/`firebase.json` di repo — cukup diarahkan ke `dist/` hasil build Astro, tidak perlu setup baru dari nol), tulis positioning statement final (sudah fix, tinggal ditempel, §6) & bio naratif.
 - Effort: 1 minggu.
-- Dependencies: Phase 0 (nama/positioning).
-- Definition of done: situs live dengan Home + About + Resume, tanpa proyek dummy.
+- Dependencies: Phase 0 (stack & positioning — **sudah selesai**).
+- Definition of done: situs live dengan Home + About + Resume, tanpa proyek dummy, dibangun di atas Astro bukan Flutter web.
 
 **Phase 2 — Flagship Project #1 (Saldough)**
 - Objective: selesaikan/lanjutkan Saldough sampai titik yang layak jadi case study (tidak harus 100% fitur, tapi core flow harus utuh + korek).
@@ -377,3 +392,16 @@ Urutan yang disarankan, disisipkan ke roadmap §17:
 5. Phase 5 (polish & launch) seperti semula.
 
 Total tambahan waktu dari 2 proyek baru ini: **~6-7 minggu kerja paruh waktu**, di luar waktu yang sudah dialokasikan untuk Saldough sendiri. Ini bukan waktu kecil — kalau ternyata terlalu berat digabung dengan pekerjaan penuh waktu, prioritaskan **Proyek Baru #1 dulu** (dampaknya ke funnel recruiter lebih besar, karena langsung mem-back-up diferensiator utama di §18) dan jadikan Proyek Baru #2 sebagai stretch goal yang boleh menyusul setelah launch pertama.
+
+---
+
+## 20. Keputusan Terbuka (Decision Log)
+
+Status keputusan yang diminta pemilik selama diskusi Phase 0, diperbarui tiap kali ada keputusan baru:
+
+| # | Keputusan | Status | Detail |
+|---|---|---|---|
+| 1 | Positioning statement | ✅ **Dikonfirmasi** (13 Sep 2026) | §6 — dipakai apa adanya |
+| 2 | Stack teknis situs | ✅ **Dikonfirmasi** (13 Sep 2026) | §7 — Astro + Tailwind + MDX, bukan Flutter web |
+| 3 | Cara pembersihan Firebase example di `flutter-package-core` | ⏳ **Terbuka — didiskusikan berikutnya** | Opsi: (a) hapus `apps/example/lib/examples/firestore_example.dart`, atau (b) ganti hardcoded key/projectId jadi placeholder + instruksi "isi dengan project Firebase kamu sendiri". Lihat §10 |
+| 4 | Nama repo untuk 2 proyek baru wajib | ⏳ **Terbuka — didiskusikan berikutnya** | Perlu nama sebelum repo GitHub dibuat untuk Proyek Baru #1 (reference repo migrasi) dan Proyek Baru #2 (package app-integrity). Lihat §19 |
