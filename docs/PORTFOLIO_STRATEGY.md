@@ -535,7 +535,9 @@ Analisis overlap dulu — package mana yang genuinely baru vs sekadar duplikat y
 | `firestore` | Tidak — `advance-mobile-platform` fokus REST/Dio, belum ada lapisan Firestore-specific (query builder, pagination, `watchCollection`) | **Diadopsi** — memperluas cakupan ke app berbasis Firebase |
 | `security` | Tidak — AES encryption, HMAC hash belum ada di `advance-mobile-platform` | **Diadopsi** — juga relevan langsung untuk §23.5 di bawah |
 
-**Cara adopsi**: di-PORT (ditulis ulang mengikuti convention zona `advance-mobile-platform`: `core/`, `shared/`, `infrastructure/`, `fondation/`), bukan copy folder mentah — supaya konsisten dan tetap terasa "satu platform", bukan tempelan. Penempatan yang disarankan: `security` → `core/security` (sejajar `core/failures`/`core/models`); `firestore` → `infrastructure/storage/firestore_storage` (sejajar `hive_storage`); `exception` → `core/exceptions` (package baru, melengkapi `core/failures`, bukan menggantikannya).
+**Cara adopsi**: di-PORT (ditulis ulang mengikuti convention zona `advance-mobile-platform`: `core/`, `shared/`, `infrastructure/`, `fondation/`), bukan copy folder mentah — supaya konsisten dan tetap terasa "satu platform", bukan tempelan.
+
+**[⚠️ Penempatan `security` DIREVISI 14 Sep 2026, lihat §23.9]** — dan rencana `exception` di tabel di atas juga sudah **DIGANTIKAN §23.9**, bukan lagi jadi `core/exceptions` mandiri.
 
 Effort: **3-5 hari** (porting kode yang sudah bekerja, bukan menulis dari nol — lebih cepat dari estimasi rebuild sebelumnya).
 
@@ -582,6 +584,21 @@ Verifikasi penuh terhadap histori (bukan cuma file saat ini):
 **Tindak lanjut yang masih perlu dilakukan pemilik**: jalankan `flutter pub upgrade` di **Saldough** (dan proyek lain yang mengonsumsi package dari `advance-mobile-platform` sebagai git dependency) — hash commit di balik setiap tag versi sudah berubah karena rewrite ini, jadi `pubspec.lock` lama menyimpan SHA yang sudah tidak lagi ditunjuk oleh tag manapun.
 
 **Pelajaran untuk audit berikutnya**: kalau ingin menilai keamanan sebuah repo git untuk dipublikasikan, **selalu cek isi historis tiap file** (`git log -p` atau `git log -S "<pola>" --all`), bukan cuma isi file di kondisi terkini — terutama untuk repo yang sudah lama berjalan sebelum dipertimbangkan untuk portfolio.
+
+### 23.9 Koreksi penempatan zona: `security` bukan `core/`, tapi `infrastructure/` (14 Sep 2026)
+
+**Temuan pemilik**: `core/security` (hasil item B′ pertama) depend ke `core/failures` — berarti dependency **horizontal/sibling** di dalam zona `core/` yang sama, bukan dependency top-down. Pemilik menanyakan apakah idealnya dependency cuma berjalan satu arah, dan mengusulkan `security` dipindah jadi `infrastructure/` saja.
+
+**Verifikasi**: benar. Dicek langsung — dua package `core/` yang sudah ada (`failures`, `models`) **sengaja tidak saling depend** (nol core-to-core dependency; `models` cuma depend ke `shared/dependencies`, bukan ke `failures`). Jadi `core/security` yang saya buat adalah dependency core-to-core **pertama** di monorepo ini, tanpa preseden. Sebaliknya, SEMUA package `infrastructure/` yang sudah ada (`api_storage`, `hive_storage`) memang biasa depend ke `core/failures` — itu memang arah silang yang sah sesuai alur yang didokumentasikan (`App → Foundation/Infrastructure → Core → Shared`, infra boleh depend ke core karena core "di bawahnya"). Prinsip yang lebih tepat: package di `core/` seharusnya berupa primitif independen (leaf), tidak saling butuh satu sama lain — kalau package A butuh package B yang sama-sama di `core/`, itu tanda A bukan primitif murni dan sebaiknya naik satu zona ke `infrastructure/`.
+
+**Tindakan**: `security` dipindah dari `core/security` ke **`infrastructure/security/secure_cipher`** (PR yang sama, sebelum merge — lihat [PR #3](https://github.com/arkariz/advance-mobile-platform/pull/3)). Package juga di-rename dari `security` jadi `secure_cipher`:
+- Match nama class utamanya (`SecureCipher`), mengurangi ambiguitas.
+- Menghindari tabrakan nama dengan package pihak ketiga `crypto` (dependency yang sudah dipakai) — nama `crypto` sempat dipertimbangkan tapi ditolak karena alasan ini.
+- Menyisakan folder `infrastructure/security/` sebagai folder kategori (mengikuti pola `infrastructure/network/`, `infrastructure/storage/` yang menampung beberapa package sejenis) — siap diisi package `app_integrity` (§23.5) di sebelahnya nanti.
+
+**Dampak ke rencana `exception` (tabel §23.4)**: entri lama di tabel §23.4 yang bilang `exception` → **"Diadopsi" jadi `core/exceptions` mandiri** sudah **digantikan** oleh keputusan yang saya jelaskan ke pemilik secara langsung (belum sempat tercatat di dokumen sebelum ini): `exception` **tidak** di-port jadi package baru sama sekali. Yang diambil cuma pengetahuan pemetaan kode error Firestore-nya, dilebur jadi `firestore_failure_mapper.dart` di dalam `firestore_storage` (§21.2/item berikutnya) — bukan package `core/exceptions` terpisah. Ini sekaligus menghindari pertanyaan zona yang sama (`exception` kemungkinan besar juga akan butuh depend ke `core/failures` kalau dibuat sebagai package mandiri, mengulang masalah yang sama).
+
+**Yang TIDAK berubah**: `firestore` → `infrastructure/storage/firestore_storage` (§23.4) sudah dari awal direncanakan masuk `infrastructure/`, jadi tidak kena isu zona yang sama — tapi rencana implementasi detailnya sendiri sedang didiskusikan ulang dengan pemilik (belum final, per obrolan sesi berjalan).
 
 ---
 
