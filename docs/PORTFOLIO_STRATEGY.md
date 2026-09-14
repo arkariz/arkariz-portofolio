@@ -423,7 +423,7 @@ Status keputusan yang diminta pemilik selama diskusi Phase 0, diperbarui tiap ka
 | 4 | Nama repo baru | ✅ **Dikonfirmasi** (13 Sep 2026) | **`flutter-native-migration-showcase`** — untuk item E (reference repo migrasi+gateway, §19/§22/§23.7). Pola penamaan: kebab-case + prefix `flutter-` (konsisten dengan `flutter-package-core`/`flutter-dsl`), pakai "showcase" (bukan "usecase" — istilah itu sudah dipakai untuk arti lain: varian komponen Widgetbook BCI/mobile-dsl). Item F sudah dikonsolidasi masuk `advance-mobile-platform` (§23.5), tidak perlu repo/nama terpisah |
 | 5 | Batas "pakai repo di-exclude sebagai referensi" | ✅ **Dikonfirmasi** (13 Sep 2026) | §21.4 — `advance-mobile-platform`, `flutter-architecture-studi`, `flutter-architecture-studi-bank` boleh dipakai sebagai referensi pola PRIVAT untuk rebuild clean-room, TIDAK PERNAH dipublikasikan/ditautkan. Isu keberadaan `flutter-architecture-studi` (commit 10 rekan kerja) di GitHub personal tetap terbuka, terpisah dari keputusan ini |
 | 6 | `advance-mobile-platform` sebagai repo utama (menggantikan `flutter-package-core`) | ✅ **Dikonfirmasi** (13 Sep 2026) | §23 — audit ulang mendalam mengonfirmasi risiko sempit (cuma 2 file: `.gitlab-ci.yml` + link Notion di README), jadi strategi jadi sanitasi in-place, bukan rebuild dari nol. `flutter-package-core` diturunkan perannya (§23.6): bagian bergunanya diadopsi, tidak lagi jadi showcase aktif |
-| 7 | Histori git `advance-mobile-platform`: pertahankan vs fresh history | ✅ **Dikonfirmasi (13 Sep 2026)** — pertahankan | §23.3 — 50 commit asli dipertahankan sebagai bukti proses kerja nyata; residual risk diterima (cuma nama tag CI runner lama, bukan secret). Sanitasi (§23.2) dilakukan sebagai commit baru di atas histori yang ada, bukan rewrite/squash |
+| 7 | Histori git `advance-mobile-platform`: pertahankan vs fresh history | ⚠️ **DIBATALKAN & DIGANTI (14 Sep 2026)** — lihat §23.8 | Keputusan awal "pertahankan histori" (13 Sep) dibuat dari audit yang **tidak lengkap** — audit itu cuma men-sweep isi file di kondisi SAAT ITU, bukan isi historis tiap file. Ternyata histori mengandung domain GitLab internal asli (menyebut nama perusahaan sungguhan — detail sengaja tidak dikutip literal di dokumen ini, lihat catatan redaksi di §23.8) + email korporat asli, sejak commit kedua repo. Histori akhirnya **di-rewrite penuh** (§23.8), bukan dipertahankan |
 
 ---
 
@@ -559,6 +559,29 @@ Dampaknya: **jumlah repo baru yang perlu dibuat turun dari 2 (item E+F) jadi han
 | E (tidak berubah) | Repo baru: **`flutter-native-migration-showcase`** ✅ (13 Sep 2026) | Reference repo migrasi + gateway (§19, §21.2) | ~3-4 minggu |
 
 **Total waktu turun** dari estimasi sebelumnya (~8-9 minggu) jadi **~6-8 minggu paruh waktu**, karena tidak perlu lagi membangun `state_management`/`navigation`/`di` dari nol — itu sudah ada dan tinggal disanitasi.
+
+### 23.8 Insiden: audit §23.1 tidak lengkap — domain perusahaan asli ada di histori git, sudah diremediasi (14 Sep 2026)
+
+> **Catatan redaksi**: dokumen ini sendiri ada di repo public (`arkariz-portofolio`). String domain/nama perusahaan asli yang jadi temuan di bawah **sengaja tidak dikutip literal** di sini — itu akan mempublikasikan ulang persis apa yang sedang diremediasi. Detail literal (kalau perlu dirujuk lagi) ada di commit message hasil `git filter-repo` yang dijalankan pemilik secara lokal, bukan di dokumen publik ini.
+
+**Apa yang terjadi**: audit §23.1 (13 Sep) menyimpulkan risiko `advance-mobile-platform` "sempit" berdasarkan sweep isi file *saat itu* — metodologi ini salah untuk kasus git: file yang sudah diperbaiki di commit terbaru bisa saja masih menyimpan isi lama di commit-commit sebelumnya. Saat mulai eksekusi item B′ (14 Sep), ditemukan 2 commit baru di `main` (dibuat sesi Claude Code lain, tanggal 10 September) yang memperbaiki URL git dependency di semua `pubspec.yaml` — sebelumnya mengarah ke sebuah URL SSH GitLab internal yang menyebut nama perusahaan tempat pemilik bekerja secara harfiah di domainnya (bukan sekadar tag generik seperti `bci-runner` yang ditemukan di audit §23.1).
+
+Verifikasi penuh terhadap histori (bukan cuma file saat ini):
+
+- Domain tersebut muncul **195 kali** di histori git, sejak **commit kedua** repo (bukan cuma di file CI).
+- Email commit korporat asli (domain perusahaan yang sama) dipakai sebagai author/committer di ~40 commit.
+- Repo ini **berstatus PUBLIC** di GitHub sejak dibuat (17 Juli 2026) — jadi ini eksposur publik yang sudah berlangsung, bukan risiko hipotetis.
+
+**Remediasi yang dilakukan**: histori di-rewrite penuh pakai `git filter-repo` (bukan cuma sanitasi commit baru di atas seperti rencana §23.2/§23.3 semula):
+1. `--replace-text` untuk mengganti URL GitLab → URL GitHub publik, domain perusahaan → placeholder generik, dan `bci-runner` → `self-hosted`, di SELURUH blob histori (bukan cuma file terkini).
+2. `--mailmap` untuk mengalihkan email commit dari email korporat ke email noreply GitHub standar (`44420394+arkariz@users.noreply.github.com`) — sengaja bukan email pribadi, supaya tidak menambah eksposur baru.
+3. Force-push ke `main` — berhasil di percobaan pertama.
+4. Force-push ke seluruh **49 tag** (dipakai sebagai pin versi oleh Saldough & konsumen lain) — sempat gagal berulang kali (HTTP 403) baik dari sesi ini maupun dari mesin pemilik; akar masalahnya ternyata **`pip install git-filter-repo` gagal duluan** di macOS pemilik (Python externally-managed, PEP 668) sehingga seluruh script berhenti sebelum sampai ke langkah push — bukan soal tag protection rule seperti dugaan awal. Setelah pakai `brew install git-filter-repo`, proses berhasil.
+5. **Diverifikasi 2x secara independen** (fresh clone dari GitHub, bukan percaya laporan begitu saja) — 0 residu di seluruh branch + 49 tag, email commit sudah bersih.
+
+**Tindak lanjut yang masih perlu dilakukan pemilik**: jalankan `flutter pub upgrade` di **Saldough** (dan proyek lain yang mengonsumsi package dari `advance-mobile-platform` sebagai git dependency) — hash commit di balik setiap tag versi sudah berubah karena rewrite ini, jadi `pubspec.lock` lama menyimpan SHA yang sudah tidak lagi ditunjuk oleh tag manapun.
+
+**Pelajaran untuk audit berikutnya**: kalau ingin menilai keamanan sebuah repo git untuk dipublikasikan, **selalu cek isi historis tiap file** (`git log -p` atau `git log -S "<pola>" --all`), bukan cuma isi file di kondisi terkini — terutama untuk repo yang sudah lama berjalan sebelum dipertimbangkan untuk portfolio.
 
 ---
 
